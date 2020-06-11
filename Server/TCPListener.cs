@@ -220,7 +220,7 @@ namespace Server
             Send(handler, PacketBuilder.BuildPacket((int)CommandCategory.LoginAuth, UserRespLoginPayload.CreatePayload(UserAck.Success)));
 
             //回傳留言版最後一百筆資料
-            var values = GetRedisDb(Helper.RedisLinkNumber.MsgData).ListRange(GetRedisDataKey(), -100, -1);
+            var values = GetRedisDb(Helper.RedisDbNum.MsgData).ListRange(GetRedisDataKey(), -100, -1);
             var MsgInfoList = new List<Message>();
             foreach (string value in values)
             {
@@ -237,7 +237,7 @@ namespace Server
             //驗證訊息用而已 連這段轉換都不用寫
             Console.WriteLine($"Clinet:{handler.RemoteEndPoint} Time：{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff}, Msg:{infoDatas[0].MessageString}");
             //存入Redis
-            SaveOneMessageInfoDataToRedis(GetRedisDb(Helper.RedisLinkNumber.MsgData), infoDatas[0]);
+            SaveOneMessageInfoDataToRedis(GetRedisDb(Helper.RedisDbNum.MsgData), infoDatas[0]);
             //丟到Redis發布訊息(因為兩台同時註冊了，避免重送)
             PublishMessageToRedis(infoDatas[0].MessageString);
         }
@@ -277,31 +277,6 @@ namespace Server
 
         }
 
-        #region Redis//DB
-
-        private static IDatabase GetRedisDb(Helper.RedisLinkNumber redisLinkNumber)
-        {
-            return Helper.Connection.GetDatabase((int)redisLinkNumber);
-        }
-        private static string GetRedisDataKey()
-        {
-            return "MessageList";
-        }
-
-        private static void SaveOneMessageInfoDataToRedis(IDatabase redisDb, Message infoData)
-        {
-            //直接新增到最末端
-            redisDb.ListRightPush(GetRedisDataKey(), JsonConvert.SerializeObject(infoData.MessageString));
-        }
-
-        private static void SaveMultiInfoDataToRedis(IDatabase redisDb, string key, List<Message> infoDatas)
-        {
-            //儲存所有的資訊到Redis
-            for (int i = 0; i < infoDatas.Count; i++)
-            {
-                redisDb.ListRightPush(key, infoDatas[i].MessageString);
-            }
-        }
 
         private static void SubscribeToRedis()
         {
@@ -338,7 +313,6 @@ namespace Server
             var sub = Helper.Connection.GetSubscriber();
             sub.Publish("login", loginUsername);
         }
-        #endregion
 
         public static bool PortInUse(int port)
         {
@@ -378,7 +352,7 @@ namespace Server
                     MessageString = $"testString{i}"
                 });
             }
-            SaveMultiInfoDataToRedis(GetRedisDb(Helper.RedisLinkNumber.MsgData), GetRedisDataKey(), dataList);
+            SaveMultiInfoDataToRedis(GetRedisDb(Helper.RedisDbNum.MsgData), GetRedisDataKey(), dataList);
         }
 
 
