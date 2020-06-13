@@ -12,9 +12,17 @@ namespace Server
 {
     public class MessageSystem : IHelper<Message>
     {
-        public IEnumerator<Message> GetEnumerator()
+        private readonly string redisKey = "MessageList";
+
+        public List<Message> GetLastMessage()
         {
-            throw new NotImplementedException();
+            var values = GetRedisDb(Helper.RedisDbNum.MsgData).ListRange(redisKey, -100, -1);
+            var MsgInfoList = new List<Message>();
+            foreach (string value in values)
+            {
+                MsgInfoList.Add(new Message { MessageString = value });
+            }
+            return MsgInfoList;
         }
 
         public IDatabase GetRedisDb(Helper.RedisDbNum number)
@@ -22,32 +30,23 @@ namespace Server
             return Helper.Connection.GetDatabase((int)number);
         }
 
-        public string GetRedisDataKey()
+        public void SaveMultiInfoDataToRedis(IDatabase redisDb, List<Message> infoDatas)
         {
-            return "MessageList";
-        }
-
-        public void SaveMultiInfoDataToRedis(IDatabase redisDb, string key, List<Message> infoDatas)
-        {
-            foreach(Message message in infoDatas)
+            foreach (Message message in infoDatas)
             {
-                redisDb.ListRightPush(key, message.MessageString);
+                redisDb.ListRightPush(redisKey, message.MessageString);
             }
         }
 
         public void SaveOneInfoDataToRedis(IDatabase redisDb, Message infoData)
         {
-            redisDb.ListRightPush(GetRedisDataKey(), JsonConvert.SerializeObject(infoData.MessageString));
+            redisDb.ListRightPush(redisKey, JsonConvert.SerializeObject(infoData.MessageString));
         }
 
-        public void SetExpiry(IDatabase redisDb, string key)
+        public void SetExpiry(IDatabase redisDb)
         {
-            redisDb.KeyExpire(key, TimeSpan.FromDays(GlobalSetting.RedisKeyExpireNormalDay);
+            redisDb.KeyExpire(redisKey, TimeSpan.FromDays(GlobalSetting.RedisKeyExpireNormalDay));
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

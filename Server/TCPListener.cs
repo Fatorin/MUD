@@ -20,6 +20,8 @@ namespace Server
 {
     class TCPListener
     {
+        private static LoginSystem loginSystem;
+        private static MessageSystem messageSystem;
         private static ConcurrentDictionary<string, Socket> ClientConnectDict;
         private static Dictionary<int, Action<Socket, byte[]>> CommandRespDict;
         private static int UsePort;
@@ -30,9 +32,29 @@ namespace Server
 
         public TCPListener()
         {
+            UsePort = GlobalSetting.PortNum1;
+            dbContext = new ApplicationContext();
+            InitMapping();
+            InitFakeData();
+            SubscribeToRedis();
+            if (PortInUse(GlobalSetting.PortNum1))
+            {
+                UsePort = GlobalSetting.PortNum2;
+            }
+
+            if (PortInUse(GlobalSetting.PortNum1) && PortInUse(GlobalSetting.PortNum2))
+            {
+                Console.WriteLine("Port are used.");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine($"Port use {UsePort}");
+            loginSystem = new LoginSystem();
+            messageSystem = new MessageSystem();
         }
 
-        public static void StartListening()
+        public void StartListening()
         {
             IPAddress ipAddress = IPAddress.Any;
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, UsePort);
@@ -72,7 +94,7 @@ namespace Server
 
         }
 
-        public static void AcceptCallback(IAsyncResult ar)
+        public void AcceptCallback(IAsyncResult ar)
         {
 
             // Get the socket that handles the client request.  
@@ -89,7 +111,7 @@ namespace Server
             allDone.Set();
         }
 
-        public static void ReadCallback(IAsyncResult ar)
+        public void ReadCallback(IAsyncResult ar)
         {
             // Retrieve the state object and the handler socket  
             // from the asynchronous state object.  
@@ -164,14 +186,14 @@ namespace Server
             }
         }
 
-        private static void Send(Socket handler, byte[] byteData)
+        private void Send(Socket handler, byte[] byteData)
         {
             // Begin sending the data to the remote device.  
             handler.BeginSend(byteData, 0, byteData.Length, 0,
                 new AsyncCallback(SendCallback), handler);
         }
 
-        private static void SendCallback(IAsyncResult ar)
+        private void SendCallback(IAsyncResult ar)
         {
             try
             {
@@ -188,7 +210,7 @@ namespace Server
             }
         }
 
-        private static void ReceviveLoginAuthData(Socket handler, byte[] byteArray)
+        private void ReceviveLoginAuthData(Socket handler, byte[] byteArray)
         {
             UserReqLoginPayload.ParsePayload(byteArray, out var infoData);
             Console.WriteLine($"Clinet:{handler.RemoteEndPoint} Time：{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff}, UserId:{infoData.UserId}");
@@ -219,30 +241,24 @@ namespace Server
             //回傳成功訊息給對應的人
             Send(handler, PacketBuilder.BuildPacket((int)CommandCategory.LoginAuth, UserRespLoginPayload.CreatePayload(UserAck.Success)));
 
-            //回傳留言版最後一百筆資料
-            var values = GetRedisDb(Helper.RedisDbNum.MsgData).ListRange(GetRedisDataKey(), -100, -1);
-            var MsgInfoList = new List<Message>();
-            foreach (string value in values)
-            {
-                MsgInfoList.Add(new Message { MessageString = value });
-            }
-            Send(handler, PacketBuilder.BuildPacket((int)CommandCategory.MsgAll, MessageRespPayload.CreatePayload(MessageAck.Success, MsgInfoList.ToArray())));
+            //回傳留言版最後一百筆資料            
+            Send(handler, PacketBuilder.BuildPacket((int)CommandCategory.MsgAll, MessageRespPayload.CreatePayload(MessageAck.Success, messageSystem.GetLastMessage().ToArray())));
             ClientConnectDict.TryAdd(infoData.UserId, handler);
         }
 
-        private static void ReceviveOneMessage(Socket handler, byte[] byteArray)
+        private void ReceviveOneMessage(Socket handler, byte[] byteArray)
         {
             MessageReqPayload.ParsePayload(byteArray, out var infoDatas);
             //理論上只有第一筆訊息 懶得分開寫
             //驗證訊息用而已 連這段轉換都不用寫
             Console.WriteLine($"Clinet:{handler.RemoteEndPoint} Time：{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff}, Msg:{infoDatas[0].MessageString}");
             //存入Redis
-            SaveOneMessageInfoDataToRedis(GetRedisDb(Helper.RedisDbNum.MsgData), infoDatas[0]);
+            messageSystem.SaveOneInfoDataToRedis(messageSystem.GetRedisDb(Helper.RedisDbNum.MsgData), infoDatas[0]);
             //丟到Redis發布訊息(因為兩台同時註冊了，避免重送)
             PublishMessageToRedis(infoDatas[0].MessageString);
         }
 
-        private static void SendMsgToAll(Message[] infoDatas)
+        private void SendMsgToAll(Message[] infoDatas)
         {
             foreach (var socketTemp in ClientConnectDict)
             {
@@ -251,14 +267,14 @@ namespace Server
             }
         }
 
-        private static void ExceptionDisconnect(Socket handler)
+        private void ExceptionDisconnect(Socket handler)
         {
             Console.WriteLine($"Remove {handler.RemoteEndPoint}, AcceptCount:{ClientConnectDict.Count}");
             handler.Shutdown(SocketShutdown.Both);
             handler.Close();
         }
 
-        private static void ManualDisconnect(String username)
+        private void ManualDisconnect(String username)
         {
             try
             {
@@ -278,7 +294,7 @@ namespace Server
         }
 
 
-        private static void SubscribeToRedis()
+        private void SubscribeToRedis()
         {
             //註冊Redis的事件
             var sub = Helper.Connection.GetSubscriber();
@@ -300,21 +316,21 @@ namespace Server
             });
         }
 
-        private static void PublishMessageToRedis(String message)
+        private void PublishMessageToRedis(String message)
         {
             //註冊Redis的事件
             var sub = Helper.Connection.GetSubscriber();
             sub.Publish("messages", message);
         }
 
-        private static void PublishLoginToRedis(String loginUsername)
+        private void PublishLoginToRedis(String loginUsername)
         {
             //註冊Redis的事件
             var sub = Helper.Connection.GetSubscriber();
             sub.Publish("login", loginUsername);
         }
 
-        public static bool PortInUse(int port)
+        public bool PortInUse(int port)
         {
             bool inUse = false;
 
@@ -332,7 +348,7 @@ namespace Server
             return inUse;
         }
 
-        private static void InitMapping()
+        private void InitMapping()
         {
             ClientConnectDict = new ConcurrentDictionary<string, Socket>();
             CommandRespDict = new Dictionary<int, Action<Socket, byte[]>>()
@@ -342,7 +358,7 @@ namespace Server
                 };
         }
 
-        private static void InitFakeData()
+        private void InitFakeData()
         {
             List<Message> dataList = new List<Message>();
             for (int i = 0; i < 10; i++)
@@ -352,33 +368,8 @@ namespace Server
                     MessageString = $"testString{i}"
                 });
             }
-            SaveMultiInfoDataToRedis(GetRedisDb(Helper.RedisDbNum.MsgData), GetRedisDataKey(), dataList);
+            messageSystem.SaveMultiInfoDataToRedis(messageSystem.GetRedisDb(Helper.RedisDbNum.MsgData), dataList);
         }
 
-
-        public static void Main(String[] args)
-        {
-            UsePort = GlobalSetting.PortNum1;
-            dbContext = new ApplicationContext();
-            InitMapping();
-            InitFakeData();
-            SubscribeToRedis();
-            if (PortInUse(GlobalSetting.PortNum1))
-            {
-                UsePort = GlobalSetting.PortNum2;
-            }
-
-            if (PortInUse(GlobalSetting.PortNum1) && PortInUse(GlobalSetting.PortNum2))
-            {
-                Console.WriteLine("Port are used.");
-                Console.ReadKey();
-                return;
-            }
-
-            Console.WriteLine($"Port use {UsePort}");
-
-            StartListening();
-            return;
-        }
     }
 }

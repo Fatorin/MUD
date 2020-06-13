@@ -10,17 +10,14 @@ namespace Server
 {
     public class LoginSystem : IHelper<User>
     {
-        public string GetRedisDataKey()
-        {
-            throw new NotImplementedException();
-        }
+        private readonly string redisKey = "MessageList";
 
         public IDatabase GetRedisDb(Helper.RedisDbNum number)
         {
             throw new NotImplementedException();
         }
 
-        public void SaveMultiInfoDataToRedis(IDatabase redisDb, string key, List<User> infoDatas)
+        public void SaveMultiInfoDataToRedis(IDatabase redisDb, List<User> infoDatas)
         {
             throw new NotImplementedException();
         }
@@ -30,19 +27,10 @@ namespace Server
             throw new NotImplementedException();
         }
 
-        public void SetExpiry(IDatabase redisDb, string key)
+        public void SetExpiry(IDatabase redisDb)
         {
             throw new NotImplementedException();
         }
 
-        IEnumerator<User> IEnumerable<User>.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
