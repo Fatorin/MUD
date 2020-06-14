@@ -6,12 +6,12 @@ using System.Text;
 
 namespace Server.Redis
 {
-    public class Helper
+    public class RedisHelper
     {
-        static Helper()
+        static RedisHelper()
         {
             var RedisGetConnectStr = GlobalSetting.RedisGetConnectString;
-            Helper._connection = new Lazy<ConnectionMultiplexer>(() =>
+            RedisHelper._connection = new Lazy<ConnectionMultiplexer>(() =>
             {
                 return ConnectionMultiplexer.Connect(RedisGetConnectStr);
             });

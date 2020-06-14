@@ -10,13 +10,15 @@ using System.Text;
 
 namespace Server
 {
-    public class MessageSystem : IHelper<Message>
+    public sealed class MessageSystem : ISystemHelper<Message>
     {
-        private readonly string redisKey = "MessageList";
+        //Singleton Mode
+        public static MessageSystem Instance { get; } = new MessageSystem();
 
+        private readonly string redisKey = "MessageList";
         public List<Message> GetLastMessage()
         {
-            var values = GetRedisDb(Helper.RedisDbNum.MsgData).ListRange(redisKey, -100, -1);
+            var values = GetRedisDb(RedisHelper.RedisDbNum.MsgData).ListRange(redisKey, -100, -1);
             var MsgInfoList = new List<Message>();
             foreach (string value in values)
             {
@@ -25,9 +27,9 @@ namespace Server
             return MsgInfoList;
         }
 
-        public IDatabase GetRedisDb(Helper.RedisDbNum number)
+        public IDatabase GetRedisDb(RedisHelper.RedisDbNum number)
         {
-            return Helper.Connection.GetDatabase((int)number);
+            return RedisHelper.Connection.GetDatabase((int)number);
         }
 
         public void SaveMultiInfoDataToRedis(IDatabase redisDb, List<Message> infoDatas)

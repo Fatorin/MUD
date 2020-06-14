@@ -1,4 +1,5 @@
-﻿using Common.Model.User;
+﻿using Common;
+using Common.Model.User;
 using Server.Redis;
 using StackExchange.Redis;
 using System;
@@ -8,13 +9,16 @@ using System.Text;
 
 namespace Server
 {
-    public class LoginSystem : IHelper<User>
+    public sealed class LoginSystem : ISystemHelper<User>
     {
-        private readonly string redisKey = "MessageList";
+        //Singleton Mode
+        public static LoginSystem Instance { get; } = new LoginSystem();
 
-        public IDatabase GetRedisDb(Helper.RedisDbNum number)
+        private readonly string redisKey = "LoginList";
+
+        public IDatabase GetRedisDb(RedisHelper.RedisDbNum number)
         {
-            throw new NotImplementedException();
+            return RedisHelper.Connection.GetDatabase((int)number);
         }
 
         public void SaveMultiInfoDataToRedis(IDatabase redisDb, List<User> infoDatas)
@@ -29,7 +33,7 @@ namespace Server
 
         public void SetExpiry(IDatabase redisDb)
         {
-            throw new NotImplementedException();
+            redisDb.KeyExpire(redisKey, TimeSpan.FromDays(GlobalSetting.RedisKeyExpireNormalDay));
         }
 
     }

@@ -18,12 +18,10 @@ using System.Threading;
 
 namespace Server
 {
-    class TCPListener
+    public sealed class TCPListener
     {
-        private static LoginSystem loginSystem;
-        private static MessageSystem messageSystem;
         private static ConcurrentDictionary<string, Socket> ClientConnectDict;
-        private static Dictionary<int, Action<Socket, byte[]>> CommandRespDict;
+        private static ConcurrentDictionary<int, Action<Socket, byte[]>> CommandRespDict;
         private static int UsePort;
         private static ApplicationContext dbContext;
 
@@ -50,8 +48,6 @@ namespace Server
             }
 
             Console.WriteLine($"Port use {UsePort}");
-            loginSystem = new LoginSystem();
-            messageSystem = new MessageSystem();
         }
 
         public void StartListening()
@@ -91,12 +87,10 @@ namespace Server
 
             Console.WriteLine("\nPress ENTER to exit...");
             Console.ReadKey();
-
         }
 
         public void AcceptCallback(IAsyncResult ar)
         {
-
             // Get the socket that handles the client request.  
             Socket listener = (Socket)ar.AsyncState;
             Socket handler = listener.EndAccept(ar);
@@ -242,7 +236,7 @@ namespace Server
             Send(handler, PacketBuilder.BuildPacket((int)CommandCategory.LoginAuth, UserRespLoginPayload.CreatePayload(UserAck.Success)));
 
             //回傳留言版最後一百筆資料            
-            Send(handler, PacketBuilder.BuildPacket((int)CommandCategory.MsgAll, MessageRespPayload.CreatePayload(MessageAck.Success, messageSystem.GetLastMessage().ToArray())));
+            Send(handler, PacketBuilder.BuildPacket((int)CommandCategory.MsgAll, MessageRespPayload.CreatePayload(MessageAck.Success, MessageSystem.Instance.GetLastMessage().ToArray())));
             ClientConnectDict.TryAdd(infoData.UserId, handler);
         }
 
@@ -253,7 +247,7 @@ namespace Server
             //驗證訊息用而已 連這段轉換都不用寫
             Console.WriteLine($"Clinet:{handler.RemoteEndPoint} Time：{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff}, Msg:{infoDatas[0].MessageString}");
             //存入Redis
-            messageSystem.SaveOneInfoDataToRedis(messageSystem.GetRedisDb(Helper.RedisDbNum.MsgData), infoDatas[0]);
+            MessageSystem.Instance.SaveOneInfoDataToRedis(MessageSystem.Instance.GetRedisDb(RedisHelper.RedisDbNum.MsgData), infoDatas[0]);
             //丟到Redis發布訊息(因為兩台同時註冊了，避免重送)
             PublishMessageToRedis(infoDatas[0].MessageString);
         }
@@ -293,11 +287,10 @@ namespace Server
 
         }
 
-
         private void SubscribeToRedis()
         {
             //註冊Redis的事件
-            var sub = Helper.Connection.GetSubscriber();
+            var sub = RedisHelper.Connection.GetSubscriber();
             sub.Subscribe("messages", (channel, message) =>
             {
                 //當收到Message的時候，會使用Send傳送給所有用戶
@@ -319,14 +312,14 @@ namespace Server
         private void PublishMessageToRedis(String message)
         {
             //註冊Redis的事件
-            var sub = Helper.Connection.GetSubscriber();
+            var sub = RedisHelper.Connection.GetSubscriber();
             sub.Publish("messages", message);
         }
 
         private void PublishLoginToRedis(String loginUsername)
         {
             //註冊Redis的事件
-            var sub = Helper.Connection.GetSubscriber();
+            var sub = RedisHelper.Connection.GetSubscriber();
             sub.Publish("login", loginUsername);
         }
 
@@ -351,11 +344,9 @@ namespace Server
         private void InitMapping()
         {
             ClientConnectDict = new ConcurrentDictionary<string, Socket>();
-            CommandRespDict = new Dictionary<int, Action<Socket, byte[]>>()
-                {
-                    { (int)CommandCategory.LoginAuth, ReceviveLoginAuthData},
-                    { (int)CommandCategory.MsgOnce, ReceviveOneMessage},
-                };
+            CommandRespDict = new ConcurrentDictionary<int, Action<Socket, byte[]>>();
+            CommandRespDict.TryAdd((int)CommandCategory.LoginAuth, ReceviveLoginAuthData);
+            CommandRespDict.TryAdd((int)CommandCategory.MsgOnce, ReceviveOneMessage);
         }
 
         private void InitFakeData()
@@ -368,7 +359,7 @@ namespace Server
                     MessageString = $"testString{i}"
                 });
             }
-            messageSystem.SaveMultiInfoDataToRedis(messageSystem.GetRedisDb(Helper.RedisDbNum.MsgData), dataList);
+            MessageSystem.Instance.SaveMultiInfoDataToRedis(MessageSystem.Instance.GetRedisDb(RedisHelper.RedisDbNum.MsgData), dataList);
         }
 
     }

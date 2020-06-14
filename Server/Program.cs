@@ -9,7 +9,7 @@ namespace Server
 {
     class Program
     {
-        void main()
+        public static void Main(String[] args)
         {
 
         }
