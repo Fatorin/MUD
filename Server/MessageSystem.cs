@@ -1,6 +1,8 @@
 ﻿using Common;
 using Common.Model.Command;
 using Common.Model.Message;
+using log4net;
+using log4net.Repository.Hierarchy;
 using Newtonsoft.Json;
 using Server.Base;
 using Server.Redis;
