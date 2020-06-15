@@ -1,54 +1,78 @@
 ﻿using Common;
+using Common.Model.Command;
 using Common.Model.Message;
 using Newtonsoft.Json;
+using Server.Base;
 using Server.Redis;
 using StackExchange.Redis;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 
 namespace Server
 {
-    public sealed class MessageSystem : ISystemHelper<Message>
+    public sealed class MessageSystem : BaseSystem, IBaseRedisSystem<Message>
     {
         //Singleton Mode
         public static MessageSystem Instance { get; } = new MessageSystem();
 
-        private readonly string redisKey = "MessageList";
-        public List<Message> GetLastMessage()
+        public MessageSystem()
         {
-            var values = GetRedisDb(RedisHelper.RedisDbNum.MsgData).ListRange(redisKey, -100, -1);
+            mappings.TryAdd((int)MessageCommand.MessageReq, MessageReq);
+            //init mapping的程式
+        }
+
+        public void GetLastMessage(Player player)
+        {
+            var values = RedisHelper.GetRedisDb(RedisHelper.RedisDbNum.MsgData).ListRange(GetSystemRedisKey(), -100, -1);
             var MsgInfoList = new List<Message>();
             foreach (string value in values)
             {
                 MsgInfoList.Add(new Message { MessageString = value });
             }
-            return MsgInfoList;
+            Send(player, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem, (int)MessageCommand.MessageResp, MessageRespPayload.CreatePayload(MessageAck.Success, MsgInfoList.ToArray())));
         }
 
-        public IDatabase GetRedisDb(RedisHelper.RedisDbNum number)
+        private void MessageReq(Player player, byte[] byteArray)
         {
-            return RedisHelper.Connection.GetDatabase((int)number);
+            MessageReqPayload.ParsePayload(byteArray, out var infoDatas);
+            //存入Redis
+            SaveOneInfoDataToRedis(RedisHelper.GetRedisDb(RedisHelper.RedisDbNum.MsgData), infoDatas[0]);
+            //丟到Redis發布訊息(因為兩台同時註冊了，避免重送)
+            SockerManager.Instance.PublishMessageToRedis(infoDatas[0].MessageString);
         }
 
+        public void SendMsgToAll(Message[] infoDatas)
+        {
+            Broadcast(PacketBuilder.BuildPacket((int)SystemCategory.MessageSystem,(int)MessageCommand.MessageResp, MessageRespPayload.CreatePayload(MessageAck.Success, infoDatas.ToArray())));
+        }
+
+        //實作各Redis
         public void SaveMultiInfoDataToRedis(IDatabase redisDb, List<Message> infoDatas)
         {
             foreach (Message message in infoDatas)
             {
-                redisDb.ListRightPush(redisKey, message.MessageString);
+                redisDb.ListRightPush(GetSystemRedisKey(), message.MessageString);
             }
         }
 
         public void SaveOneInfoDataToRedis(IDatabase redisDb, Message infoData)
         {
-            redisDb.ListRightPush(redisKey, JsonConvert.SerializeObject(infoData.MessageString));
+            redisDb.ListRightPush(GetSystemRedisKey(), JsonConvert.SerializeObject(infoData.MessageString));
         }
 
         public void SetExpiry(IDatabase redisDb)
         {
-            redisDb.KeyExpire(redisKey, TimeSpan.FromDays(GlobalSetting.RedisKeyExpireNormalDay));
+            redisDb.KeyExpire(GetSystemRedisKey(), TimeSpan.FromDays(GlobalSetting.RedisKeyExpireNormalDay));
         }
 
+        public string GetSystemRedisKey()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

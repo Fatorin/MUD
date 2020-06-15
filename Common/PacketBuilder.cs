@@ -8,28 +8,34 @@ namespace Common
     public class PacketBuilder
     {
         public static readonly int crcCode = 65517;
-        public static readonly int VerificationLen = 12;
-        public static byte[] BuildPacket(int command, byte[] dataByte)
+        public static readonly int VerificationLen = 16;
+        public static byte[] BuildPacket(int systemCategory, int systemCommand, byte[] dataByte)
         {
             //定義
-            //CRC, command , data
-            //依序存入crc len cmd data
             byte[] crcByte = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(crcCode));
-            byte[] commandByte = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(command));
-            byte[] dataLen = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(crcByte.Length + commandByte.Length + dataByte.Length));
-            byte[] packByte = new byte[crcByte.Length + dataLen.Length + commandByte.Length + dataByte.Length];
+            byte[] systemCategoryByte = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(systemCategory));
+            byte[] systemCommandByte = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(systemCommand));
+            byte[] packByte = new byte[crcByte.Length + systemCategoryByte.Length + systemCommandByte.Length + dataByte.Length];
+            //存入CRC
             crcByte.CopyTo(packByte, 0);
+            //存入封包總長
             BitConverter.GetBytes(IPAddress.HostToNetworkOrder(packByte.Length)).CopyTo(packByte, 4);
-            commandByte.CopyTo(packByte, 8);
-            dataByte.CopyTo(packByte, 12);
+            //存入封包的對應系統
+            systemCategoryByte.CopyTo(packByte, 8);
+            //存入封包的對應系統的指令
+            systemCommandByte.CopyTo(packByte, 12);
+            //存入封包的資料
+            dataByte.CopyTo(packByte, 16);
+            //回傳資料
             return packByte;
         }
 
-        public static void UnPackParam(byte[] dataByte, out int crc, out int dataLen, out int command)
+        public static void UnPackParam(byte[] dataByte, out int crc, out int dataLen, out int systemCategory, out int systemCommand)
         {
             crc = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(dataByte, 0));
             dataLen = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(dataByte, 4));
-            command = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(dataByte, 8));
+            systemCategory = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(dataByte, 8));
+            systemCommand = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(dataByte, 12));
         }
     }
 }

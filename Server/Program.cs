@@ -11,7 +11,7 @@ namespace Server
     {
         public static void Main(String[] args)
         {
-
+            SockerManager.Instance.StartListening();
         }
     }
 }

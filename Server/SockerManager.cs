@@ -13,22 +13,23 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 
 namespace Server
 {
-    public sealed class TCPListener
+    public sealed class SockerManager
     {
-        private static ConcurrentDictionary<string, Socket> ClientConnectDict;
-        private static ConcurrentDictionary<int, Action<Socket, byte[]>> CommandRespDict;
+        public static SockerManager Instance { get; } = new SockerManager();
+        private static ConcurrentDictionary<string, Player> PlayerConnectDict;
+        private static ConcurrentDictionary<int, BaseSystem> SystemDict;
         private static int UsePort;
         private static ApplicationContext dbContext;
-
         // Thread signal.  
-        public static ManualResetEvent allDone = new ManualResetEvent(false);
+        private static ManualResetEvent allDone = new ManualResetEvent(false);
 
-        public TCPListener()
+        public SockerManager()
         {
             UsePort = GlobalSetting.PortNum1;
             dbContext = new ApplicationContext();
@@ -48,6 +49,16 @@ namespace Server
             }
 
             Console.WriteLine($"Port use {UsePort}");
+        }
+
+        public ApplicationContext GetApplicationContext()
+        {
+            return dbContext;
+        }
+
+        public void CreatePlayer(Player player)
+        {
+            PlayerConnectDict.TryAdd(player.PlayerId, player);
         }
 
         public void StartListening()
@@ -89,7 +100,7 @@ namespace Server
             Console.ReadKey();
         }
 
-        public void AcceptCallback(IAsyncResult ar)
+        private void AcceptCallback(IAsyncResult ar)
         {
             // Get the socket that handles the client request.  
             Socket listener = (Socket)ar.AsyncState;
@@ -105,7 +116,7 @@ namespace Server
             allDone.Set();
         }
 
-        public void ReadCallback(IAsyncResult ar)
+        private void ReadCallback(IAsyncResult ar)
         {
             // Retrieve the state object and the handler socket  
             // from the asynchronous state object.  
@@ -113,7 +124,6 @@ namespace Server
             Socket handler = packetObj.workSocket;
             try
             {
-
                 //從socket接收資料
                 int bytesRead = handler.EndReceive(ar);
                 //如果有收到的封包才會做事情
@@ -123,11 +133,11 @@ namespace Server
                     {
                         //檢查是不是正常封包 第一會檢查CRC 有的話就改成TRUE
                         //如果沒有CRC那就直接拒絕接收
-                        PacketBuilder.UnPackParam(packetObj.buffer, out var crc, out var dataLen, out var command);
+                        PacketBuilder.UnPackParam(packetObj.buffer, out var crc, out var dataLen, out var systemCategory, out var systemCommand);
                         if (crc == PacketBuilder.crcCode)
                         {
                             //依照第一筆封包做初始化的行為
-                            packetObj.SetFirstReceive(dataLen, command);
+                            packetObj.SetFirstReceive(dataLen, systemCategory, systemCommand);
                         }
                         else
                         {
@@ -145,15 +155,17 @@ namespace Server
                     if (packetObj.ReceiveLen == 0)
                     {
                         //執行對應的FUNC
-                        if (CommandRespDict.TryGetValue(packetObj.Command, out var mappingFunc))
+                        //想一個東西能把資料丟給對應的SYSTEM
+                        if (SystemDict.TryGetValue(packetObj.SystemCategory, out var system))
                         {
                             //傳送資料給對應的Command，扣掉前面的CRC,DataLen,Command
-                            mappingFunc(handler, packetObj.infoBytes.Skip(PacketBuilder.VerificationLen).ToArray());
+                            var pack = packetObj.infoBytes.Skip(PacketBuilder.VerificationLen).ToArray();
+                            system.PlayerEnter(null, packetObj.SystemCommand, pack);
                         }
                         else
                         {
                             //有對應的Function就執行，沒對應的Func就報錯但會繼續執行
-                            Console.WriteLine("Not mapping function.");
+                            Console.WriteLine("Not mapping system.");
                         }
                         //清除封包資訊 重設
                         packetObj.ResetData();
@@ -180,11 +192,19 @@ namespace Server
             }
         }
 
-        private void Send(Socket handler, byte[] byteData)
+        public void Send(Player player, byte[] byteData)
         {
-            // Begin sending the data to the remote device.  
+            var handler = player.Connection;
             handler.BeginSend(byteData, 0, byteData.Length, 0,
                 new AsyncCallback(SendCallback), handler);
+        }
+
+        public void Broadcast(byte[] byteData)
+        {
+            foreach (var ClientConnectInfo in PlayerConnectDict)
+            {
+                Send(ClientConnectInfo.Value, byteData);
+            }
         }
 
         private void SendCallback(IAsyncResult ar)
@@ -204,66 +224,10 @@ namespace Server
             }
         }
 
-        private void ReceviveLoginAuthData(Socket handler, byte[] byteArray)
-        {
-            UserReqLoginPayload.ParsePayload(byteArray, out var infoData);
-            Console.WriteLine($"Clinet:{handler.RemoteEndPoint} Time：{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff}, UserId:{infoData.UserId}");
-            var user = dbContext.Users.Find(infoData.UserId);
-            //如果用戶不存在則自動幫他創帳號
-            if (user == null)
-            {
-                Console.WriteLine("not found equal userid, created new user.");
-                user = new User
-                {
-                    UserId = infoData.UserId,
-                    UserPwd = infoData.UserPwd
-                };
-                dbContext.Users.Add(user);
-                dbContext.SaveChanges();
-            }
-
-            //建立完帳戶、確認用戶帳密是否一致
-            //不一致就傳送失敗訊號，並且剔除使用者
-            if (infoData.UserPwd != user.UserPwd)
-            {
-                Send(handler, PacketBuilder.BuildPacket((int)CommandCategory.LoginAuth, UserRespLoginPayload.CreatePayload(UserAck.AuthFail)));
-                return;
-            }
-            //驗證成功就通知另一個伺服器把人踢了(這邊要用Redis做)
-            PublishLoginToRedis(infoData.UserId);
-            //要重寫與另一個SERVER溝通的方法
-            //回傳成功訊息給對應的人
-            Send(handler, PacketBuilder.BuildPacket((int)CommandCategory.LoginAuth, UserRespLoginPayload.CreatePayload(UserAck.Success)));
-
-            //回傳留言版最後一百筆資料            
-            Send(handler, PacketBuilder.BuildPacket((int)CommandCategory.MsgAll, MessageRespPayload.CreatePayload(MessageAck.Success, MessageSystem.Instance.GetLastMessage().ToArray())));
-            ClientConnectDict.TryAdd(infoData.UserId, handler);
-        }
-
-        private void ReceviveOneMessage(Socket handler, byte[] byteArray)
-        {
-            MessageReqPayload.ParsePayload(byteArray, out var infoDatas);
-            //理論上只有第一筆訊息 懶得分開寫
-            //驗證訊息用而已 連這段轉換都不用寫
-            Console.WriteLine($"Clinet:{handler.RemoteEndPoint} Time：{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff}, Msg:{infoDatas[0].MessageString}");
-            //存入Redis
-            MessageSystem.Instance.SaveOneInfoDataToRedis(MessageSystem.Instance.GetRedisDb(RedisHelper.RedisDbNum.MsgData), infoDatas[0]);
-            //丟到Redis發布訊息(因為兩台同時註冊了，避免重送)
-            PublishMessageToRedis(infoDatas[0].MessageString);
-        }
-
-        private void SendMsgToAll(Message[] infoDatas)
-        {
-            foreach (var socketTemp in ClientConnectDict)
-            {
-                //將收到的訊息傳送給所有當前用戶
-                Send(socketTemp.Value, PacketBuilder.BuildPacket((int)CommandCategory.MsgOnce, MessageRespPayload.CreatePayload(MessageAck.Success, infoDatas.ToArray())));
-            }
-        }
 
         private void ExceptionDisconnect(Socket handler)
         {
-            Console.WriteLine($"Remove {handler.RemoteEndPoint}, AcceptCount:{ClientConnectDict.Count}");
+            Console.WriteLine($"Remove {handler.RemoteEndPoint}, AcceptCount:{PlayerConnectDict.Count}");
             handler.Shutdown(SocketShutdown.Both);
             handler.Close();
         }
@@ -272,13 +236,13 @@ namespace Server
         {
             try
             {
-                if (!ClientConnectDict.TryRemove(username, out var handler))
+                if (!PlayerConnectDict.TryRemove(username, out var player))
                 {
                     Console.WriteLine($"[{username}] not find.");
                     return;
                 }
                 Console.WriteLine($"[{username}] repeat login , remove connect.");
-                ExceptionDisconnect(handler);
+                ExceptionDisconnect(player.Connection);
             }
             catch (Exception e)
             {
@@ -298,32 +262,31 @@ namespace Server
                 {
                     new Message{ MessageString = message }
                 };
-                SendMsgToAll(MsgInfoDatas);
+                MessageSystem.Instance.SendMsgToAll(MsgInfoDatas);
             });
 
             sub.Subscribe("login", (channel, loginUsername) =>
             {
                 //當收到登入訊息後，會先通知踢掉，再進行後續登入吧(?
-                //先不要弄
                 ManualDisconnect(loginUsername);
             });
         }
 
-        private void PublishMessageToRedis(String message)
+        public void PublishMessageToRedis(String message)
         {
             //註冊Redis的事件
             var sub = RedisHelper.Connection.GetSubscriber();
             sub.Publish("messages", message);
         }
 
-        private void PublishLoginToRedis(String loginUsername)
+        public void PublishLoginToRedis(String loginUsername)
         {
             //註冊Redis的事件
             var sub = RedisHelper.Connection.GetSubscriber();
             sub.Publish("login", loginUsername);
         }
 
-        public bool PortInUse(int port)
+        private bool PortInUse(int port)
         {
             bool inUse = false;
 
@@ -343,10 +306,11 @@ namespace Server
 
         private void InitMapping()
         {
-            ClientConnectDict = new ConcurrentDictionary<string, Socket>();
-            CommandRespDict = new ConcurrentDictionary<int, Action<Socket, byte[]>>();
-            CommandRespDict.TryAdd((int)CommandCategory.LoginAuth, ReceviveLoginAuthData);
-            CommandRespDict.TryAdd((int)CommandCategory.MsgOnce, ReceviveOneMessage);
+            PlayerConnectDict = new ConcurrentDictionary<string, Player>();
+            SystemDict = new ConcurrentDictionary<int, BaseSystem>();
+            //這邊綁定至對應的SYSTEM
+            SystemDict.TryAdd((int)SystemCategory.LoginSystem, LoginSystem.Instance);
+            SystemDict.TryAdd((int)SystemCategory.MessageSystem, MessageSystem.Instance);
         }
 
         private void InitFakeData()
@@ -359,7 +323,7 @@ namespace Server
                     MessageString = $"testString{i}"
                 });
             }
-            MessageSystem.Instance.SaveMultiInfoDataToRedis(MessageSystem.Instance.GetRedisDb(RedisHelper.RedisDbNum.MsgData), dataList);
+            MessageSystem.Instance.SaveMultiInfoDataToRedis(RedisHelper.GetRedisDb(RedisHelper.RedisDbNum.MsgData), dataList);
         }
 
     }

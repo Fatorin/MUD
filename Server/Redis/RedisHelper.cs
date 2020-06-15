@@ -11,7 +11,7 @@ namespace Server.Redis
         static RedisHelper()
         {
             var RedisGetConnectStr = GlobalSetting.RedisGetConnectString;
-            RedisHelper._connection = new Lazy<ConnectionMultiplexer>(() =>
+            _connection = new Lazy<ConnectionMultiplexer>(() =>
             {
                 return ConnectionMultiplexer.Connect(RedisGetConnectStr);
             });
@@ -25,6 +25,11 @@ namespace Server.Redis
             {
                 return _connection.Value;
             }
+        }
+
+        public static IDatabase GetRedisDb(RedisHelper.RedisDbNum number)
+        {
+            return Connection.GetDatabase((int)number);
         }
 
         public enum RedisDbNum

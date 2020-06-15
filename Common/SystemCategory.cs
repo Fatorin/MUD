@@ -4,11 +4,9 @@ using System.Text;
 
 namespace Common.Model.Command
 {
-    public enum CommandCategory
+    public enum SystemCategory
     {
-        LoginAuth,
-        MsgAll,
-        MsgOnce,
-        LoginKick,
+        LoginSystem = 1111,
+        MessageSystem = 2222,
     }
 }

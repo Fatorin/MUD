@@ -15,7 +15,8 @@ namespace Common
         public int ReceiveLen;
         public int LastReceivedPos;
         public bool isCorrectPack = false;
-        public int Command;
+        public int SystemCategory;
+        public int SystemCommand;
 
         public void ResetData()
         {
@@ -23,10 +24,11 @@ namespace Common
             infoBytes = null;
             isCorrectPack = false;
             LastReceivedPos = 0;
-            Command = 0;
+            SystemCategory = 0;
+            SystemCommand = 0;
         }
 
-        public void SetFirstReceive(int dataLen, int command)
+        public void SetFirstReceive(int dataLen, int systemCategory, int systemCommand)
         {
             //設定封包驗證通過(如果有要接收第二段就會繼續接收)
             isCorrectPack = true;
@@ -35,7 +37,8 @@ namespace Common
             //設定接收封包大小
             infoBytes = new byte[dataLen];
             //設定封包的指令(第一次的時候)
-            Command = command;
+            SystemCategory = systemCategory;
+            SystemCommand = systemCommand;
         }
 
         public void SetContiuneReceive(int bytesRead)

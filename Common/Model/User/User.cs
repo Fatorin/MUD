@@ -9,7 +9,9 @@ namespace Common.Model.User
     public class User
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid UserUid { get; set; }
+
         public string UserId { get; set; }
 
         public string UserPwd { get; set; }
