@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Model.User;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,8 +20,6 @@ namespace Client
         private delegate void UpdateShowLog(string text);
         private BackgroundWorker bgWork;
 
-        private SocketClientManager socketClientManager = new SocketClientManager();
-
         public MainUI()
         {
             InitializeComponent();
@@ -39,9 +38,20 @@ namespace Client
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(tbId.Text) || string.IsNullOrEmpty(tbPW.Text))
+            {
+                ShowLogOnResult($"Enter something, do not enter spaces or blanks.");
+                return;
+            }
+
+            bgWorkerGoFunc(ConnectAndLogin);
+        }
+
+        private void bgWorkerGoFunc(Action func)
+        {
             if (!bgWork.IsBusy)
             {
-                bgWork.RunWorkerAsync();
+                bgWork.RunWorkerAsync(func);
             }
         }
 
@@ -54,10 +64,22 @@ namespace Client
             }
             function();*/
             ShowLogOnResult("Func Start.");
+            ConnectAndLogin();
         }
         private void bgWork_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             ShowLogOnResult("Func Finish.");
+        }
+
+        private void ConnectAndLogin()
+        {
+            var userInfo = new User
+            {
+                PlayerUid = 0,
+                UserId = tbId.Text,
+                UserPwd = tbPW.Text,
+            };
+            SocketClientManager.Instance.StartClientAndLogin(userInfo);
         }
 
         public void ShowLogOnResult(string str)

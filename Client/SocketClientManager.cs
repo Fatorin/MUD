@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Model.Command;
 using Common.Model.User;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace Client
 {
     class SocketClientManager
     {
+        public static SocketClientManager Instance { get; } = new SocketClientManager();
         private static Dictionary<int, Action> CommandReqDict = new Dictionary<int, Action>();
         private static Dictionary<int, Action<byte[]>> CommandRespDict = new Dictionary<int, Action<byte[]>>();
         private static int serverPort;
@@ -38,7 +40,7 @@ namespace Client
             }
         }
 
-        public void StartClientAndLogin()
+        public void StartClientAndLogin(User userInfo)
         {
             // Connect to a remote device.  
             try
@@ -60,12 +62,12 @@ namespace Client
                 connectDone.WaitOne();
 
                // Send test data to the remote device.
-               // Send(socketClient, PacketBuilder.BuildPacket((int)CommandEnum.LoginAuth, UserReqLoginPayload.CreatePayload()));
-               // sendDone.WaitOne();
+               Send(socketClient, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem,(int)UserCommand.UserLoginReq, UserReqLoginPayload.CreatePayload(userInfo)));
+               sendDone.WaitOne();
 
                // Receive the response from the remote device.
-               // Receive(socketClient);
-               // receiveDone.WaitOne();
+               Receive(socketClient);
+               receiveDone.WaitOne();
             }
             catch (Exception e)
             {
