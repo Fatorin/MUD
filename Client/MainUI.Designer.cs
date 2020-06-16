@@ -112,7 +112,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tbId);
             this.Name = "MainUI";
-            this.Text = "Form1";
+            this.Text = "UMD";
             this.ResumeLayout(false);
             this.PerformLayout();
 

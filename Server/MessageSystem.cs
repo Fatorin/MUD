@@ -34,7 +34,7 @@ namespace Server
             {
                 MsgInfoList.Add(new Message { MessageString = value });
             }
-            Send(player, PacketBuilder.BuildPacket(player.PlayerUid, (int)SystemCategory.LoginSystem, (int)MessageCommand.MessageResp, MessageRespPayload.CreatePayload(MessageAck.Success, MsgInfoList.ToArray())));
+            Send(player, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem, (int)MessageCommand.MessageResp, MessageRespPayload.CreatePayload(MessageAck.Success, MsgInfoList.ToArray())));
         }
 
         private void MessageReq(Player player, byte[] byteArray)
@@ -48,7 +48,7 @@ namespace Server
 
         public void SendMsgToAll(Message[] infoDatas)
         {
-            Broadcast(PacketBuilder.BuildPacket(0, (int)SystemCategory.MessageSystem, (int)MessageCommand.MessageResp, MessageRespPayload.CreatePayload(MessageAck.Success, infoDatas.ToArray())));
+            Broadcast(PacketBuilder.BuildPacket((int)SystemCategory.MessageSystem, (int)MessageCommand.MessageResp, MessageRespPayload.CreatePayload(MessageAck.Success, infoDatas.ToArray())));
         }
 
         //實作各Redis

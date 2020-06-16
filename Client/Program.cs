@@ -11,13 +11,16 @@ namespace Client
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
+        /// 
+        public static readonly MainUI mainUI = new MainUI();
+
         [STAThread]
         static void Main()
         {
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainUI());
+            Application.Run(mainUI);
         }
     }
 }
