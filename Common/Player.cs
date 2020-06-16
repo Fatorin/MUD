@@ -8,8 +8,6 @@ namespace Common
 {
     public class Player
     {
-        public int PlayerUid { get; }
-
         public Socket Connection { get; }
         public DateTime LastLoginTime { get; }
         public Player(Socket connection)

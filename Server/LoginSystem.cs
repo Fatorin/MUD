@@ -59,7 +59,7 @@ namespace Server
             //回傳留言版最後一百筆資料
             MessageSystem.Instance.GetLastMessage(player);
             //更新玩家資料
-            SockerManager.Instance.SavePlayerConnect(player.Connection, player);
+            SockerManager.Instance.SavePlayerConnect(player.Connection.RemoteEndPoint.ToString(), player);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Server
     public sealed class SockerManager
     {
         public static SockerManager Instance { get; } = new SockerManager();
-        private static ConcurrentDictionary<Socket, Player> PlayerConnectDict;
+        private static ConcurrentDictionary<string, Player> PlayerConnectDict;
         private static ConcurrentDictionary<int, BaseSystem> SystemDict;
         private static int UsePort;
         private static ApplicationContext dbContext;
@@ -56,9 +56,9 @@ namespace Server
             return dbContext;
         }
 
-        public void SavePlayerConnect(Socket socket,Player player)
+        public void SavePlayerConnect(string socketRemoteEndPoint, Player player)
         {
-            PlayerConnectDict.TryAdd(socket, player);
+            PlayerConnectDict.TryAdd(socketRemoteEndPoint, player);
         }
 
         public void StartListening()
@@ -162,9 +162,10 @@ namespace Server
                             var pack = packetObj.infoBytes.Skip(PacketBuilder.VerificationLen).ToArray();
 
                             //傳封包給特定的玩家
-                            if(!PlayerConnectDict.TryGetValue(handler,out var player))
+                            if (!PlayerConnectDict.TryGetValue(handler.RemoteEndPoint.ToString(), out var player))
                             {
                                 //沒有對應的玩家清單，通常這個是走創帳號部分
+                                //幫他建立一個Player
                                 player = new Player(handler);
                             }
                             baseSystem.PlayerEnter(player, packetObj.SystemCommand, pack);
@@ -239,16 +240,16 @@ namespace Server
             handler.Close();
         }
 
-        private void ManualDisconnect(int playerUid)
+        private void ManualDisconnect(string socketRemoteEndPoint)
         {
             try
             {
-                if (!PlayerConnectDict.TryRemove(playerUid, out var player))
+                if (!PlayerConnectDict.TryRemove(socketRemoteEndPoint, out var player))
                 {
-                    Console.WriteLine($"[{playerUid}] not find.");
+                    Console.WriteLine($"[{socketRemoteEndPoint}] not find.");
                     return;
                 }
-                Console.WriteLine($"[{playerUid}] repeat login , remove connect.");
+                Console.WriteLine($"[{socketRemoteEndPoint}] repeat login , remove connect.");
                 ExceptionDisconnect(player.Connection);
             }
             catch (Exception e)
@@ -272,10 +273,10 @@ namespace Server
                 MessageSystem.Instance.SendMsgToAll(MsgInfoDatas);
             });
 
-            sub.Subscribe("login", (channel, uid) =>
+            sub.Subscribe("login", (channel, socketRemoteEndPoint) =>
             {
                 //當收到登入訊息後，會先通知踢掉，再進行後續登入吧(?
-                ManualDisconnect(int.Parse(uid));
+                ManualDisconnect(socketRemoteEndPoint);
             });
         }
 
@@ -313,7 +314,7 @@ namespace Server
 
         private void InitMapping()
         {
-            PlayerConnectDict = new ConcurrentDictionary<Socket, Player>();
+            PlayerConnectDict = new ConcurrentDictionary<string, Player>();
             SystemDict = new ConcurrentDictionary<int, BaseSystem>();
             //這邊綁定至對應的SYSTEM
             SystemDict.TryAdd((int)SystemCategory.LoginSystem, LoginSystem.Instance);
