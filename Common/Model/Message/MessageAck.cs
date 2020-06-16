@@ -4,8 +4,7 @@ using System.Text;
 
 namespace Common.Model.Message
 {
-
-    public enum MessageAck : short
+    public enum MessageAck
     {
         Success,
         Error,

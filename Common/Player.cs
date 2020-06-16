@@ -8,24 +8,20 @@ namespace Common
 {
     public class Player
     {
-        public string PlayerId { get; }
+        public int PlayerUid { get; }
+
         public Socket Connection { get; }
-        public string PlayerSession { get; }
         public DateTime LastLoginTime { get; }
-        public Player(string playerId, Socket connection)
+        public Player(int playerUid, Socket connection)
         {
-            PlayerId = playerId;
+            PlayerUid = playerUid;
             Connection = connection;
-            PlayerSession = SessionCreate();
             LastLoginTime = DateTime.Now;
         }
 
-        private string SessionCreate()
+        public void SetPlayerUid()
         {
-            //想一套公式傳給CLIENT
-            SHA256 sha256 = new SHA256CryptoServiceProvider();
-            byte[] source = Encoding.Default.GetBytes(PlayerId);
-            return "";
+
         }
     }
 }

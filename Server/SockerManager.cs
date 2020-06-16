@@ -22,7 +22,7 @@ namespace Server
     public sealed class SockerManager
     {
         public static SockerManager Instance { get; } = new SockerManager();
-        private static ConcurrentDictionary<string, Player> PlayerConnectDict;
+        private static ConcurrentDictionary<int, Player> PlayerConnectDict;
         private static ConcurrentDictionary<int, BaseSystem> SystemDict;
         private static int UsePort;
         private static ApplicationContext dbContext;
@@ -56,9 +56,9 @@ namespace Server
             return dbContext;
         }
 
-        public void CreatePlayer(Player player)
+        public void SavePlayer(Player player)
         {
-            PlayerConnectDict.TryAdd(player.PlayerId, player);
+            PlayerConnectDict.TryAdd(player.PlayerUid, player);
         }
 
         public void StartListening()
@@ -133,16 +133,16 @@ namespace Server
                     {
                         //檢查是不是正常封包 第一會檢查CRC 有的話就改成TRUE
                         //如果沒有CRC那就直接拒絕接收
-                        PacketBuilder.UnPackParam(packetObj.buffer, out var crc, out var dataLen, out var systemCategory, out var systemCommand);
+                        PacketBuilder.UnPackParam(packetObj.buffer, out var crc, out var playerUid, out var dataLen, out var systemCategory, out var systemCommand);
                         if (crc == PacketBuilder.crcCode)
                         {
                             //依照第一筆封包做初始化的行為
-                            packetObj.SetFirstReceive(dataLen, systemCategory, systemCommand);
+                            packetObj.SetFirstReceive(dataLen, playerUid, systemCategory, systemCommand);
                         }
                         else
                         {
                             //如果CRC不對就不動作 應該要踢掉 代表這個使用者有問題
-                            Console.WriteLine("CRC check fail, make new exception.");
+                            Console.WriteLine("CRC Check fail.");
                             throw new Exception();
                         }
                     }
@@ -156,11 +156,14 @@ namespace Server
                     {
                         //執行對應的FUNC
                         //想一個東西能把資料丟給對應的SYSTEM
-                        if (SystemDict.TryGetValue(packetObj.SystemCategory, out var system))
+                        if (SystemDict.TryGetValue(packetObj.SystemCategory, out var baseSystem))
                         {
                             //傳送資料給對應的Command，扣掉前面的CRC,DataLen,Command
                             var pack = packetObj.infoBytes.Skip(PacketBuilder.VerificationLen).ToArray();
-                            system.PlayerEnter(null, packetObj.SystemCommand, pack);
+                            if(!PlayerConnectDict.TryGetValue(packetObj.playerUid,out var player)){
+                                player = new Player(0, handler);
+                            }
+                            baseSystem.PlayerEnter(player, packetObj.SystemCommand, pack);
                         }
                         else
                         {
@@ -232,16 +235,16 @@ namespace Server
             handler.Close();
         }
 
-        private void ManualDisconnect(String username)
+        private void ManualDisconnect(int playerUid)
         {
             try
             {
-                if (!PlayerConnectDict.TryRemove(username, out var player))
+                if (!PlayerConnectDict.TryRemove(playerUid, out var player))
                 {
-                    Console.WriteLine($"[{username}] not find.");
+                    Console.WriteLine($"[{playerUid}] not find.");
                     return;
                 }
-                Console.WriteLine($"[{username}] repeat login , remove connect.");
+                Console.WriteLine($"[{playerUid}] repeat login , remove connect.");
                 ExceptionDisconnect(player.Connection);
             }
             catch (Exception e)
@@ -265,10 +268,10 @@ namespace Server
                 MessageSystem.Instance.SendMsgToAll(MsgInfoDatas);
             });
 
-            sub.Subscribe("login", (channel, loginUsername) =>
+            sub.Subscribe("login", (channel, uid) =>
             {
                 //當收到登入訊息後，會先通知踢掉，再進行後續登入吧(?
-                ManualDisconnect(loginUsername);
+                ManualDisconnect(int.Parse(uid));
             });
         }
 
@@ -279,11 +282,11 @@ namespace Server
             sub.Publish("messages", message);
         }
 
-        public void PublishLoginToRedis(String loginUsername)
+        public void PublishLoginToRedis(int playerUid)
         {
             //註冊Redis的事件
             var sub = RedisHelper.Connection.GetSubscriber();
-            sub.Publish("login", loginUsername);
+            sub.Publish("login", playerUid);
         }
 
         private bool PortInUse(int port)
@@ -306,7 +309,7 @@ namespace Server
 
         private void InitMapping()
         {
-            PlayerConnectDict = new ConcurrentDictionary<string, Player>();
+            PlayerConnectDict = new ConcurrentDictionary<int, Player>();
             SystemDict = new ConcurrentDictionary<int, BaseSystem>();
             //這邊綁定至對應的SYSTEM
             SystemDict.TryAdd((int)SystemCategory.LoginSystem, LoginSystem.Instance);

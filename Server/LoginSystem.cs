@@ -9,18 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 
 namespace Server
 {
-    public sealed class LoginSystem : BaseSystem , IBaseRedisSystem<User>
+    public sealed class LoginSystem : BaseSystem
     {
         //Singleton Mode
         public static LoginSystem Instance { get; } = new LoginSystem();
 
         public LoginSystem()
         {
-            mappings.TryAdd((int)UserCommand.UserLoginReq,UserLoginReq);
+            mappings.TryAdd((int)UserCommand.UserLoginReq, UserLoginReq);
         }
 
         private void UserLoginReq(Player player, byte[] byteArray)
@@ -45,54 +46,34 @@ namespace Server
             //不一致就傳送失敗訊號，並且剔除使用者
             if (infoData.UserPwd != user.UserPwd)
             {
-                Send(player, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginResp, UserRespLoginPayload.CreatePayload(UserAck.AuthFail)));
+                Send(player, PacketBuilder.BuildPacket(0, (int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginResp, UserRespLoginPayload.CreatePayload(UserAck.AuthFail)));
                 return;
             }
+            var playerUid = dbContext.Users.Find(infoData.UserId).PlayerUid;
+            player = new Player(playerUid, player.Connection);
+
             //驗證成功就通知另一個伺服器把人踢了(這邊要用Redis做)
-            SockerManager.Instance.PublishLoginToRedis(infoData.UserId);
+            SockerManager.Instance.PublishLoginToRedis(infoData.PlayerUid);
             //要重寫與另一個SERVER溝通的方法
             //回傳成功訊息給對應的人
-            Send(player, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginResp, UserRespLoginPayload.CreatePayload(UserAck.Success)));
+            Send(player, PacketBuilder.BuildPacket(player.PlayerUid, (int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginResp, UserRespLoginPayload.CreatePayload(UserAck.Success)));
 
             //回傳留言版最後一百筆資料
             MessageSystem.Instance.GetLastMessage(player);
             //新增玩家資料
+            SockerManager.Instance.SavePlayer(player);
         }
 
         public override void PlayerEnter(Player player, int command, byte[] bytesData)
         {
-            base.PlayerEnter(player, command, bytesData);
-        }
-
-        public override void Send(Player player, byte[] byteData)
-        {
-            base.Send(player, byteData);
-        }
-
-        public override void Broadcast(byte[] byteData)
-        {
-            base.Broadcast(byteData);
-        }
-
-        //實作各Redis
-        public string GetSystemRedisKey()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SaveOneInfoDataToRedis(IDatabase redisDb, User InfoData)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SaveMultiInfoDataToRedis(IDatabase redisDb, List<User> InfoDatas)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetExpiry(IDatabase redisDb)
-        {
-            throw new NotImplementedException();
+            if (mappings.TryGetValue(command, out var function))
+            {
+                function(player, bytesData);
+            }
+            else
+            {
+                Console.WriteLine($"invalid commnd={command}");
+            }
         }
     }
 }

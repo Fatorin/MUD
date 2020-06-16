@@ -4,8 +4,7 @@ using System.Text;
 
 namespace Common.Model.User
 {
-
-    public enum UserAck : short
+    public enum UserAck
     {
         Success,
         AuthFail,

@@ -10,7 +10,7 @@ namespace Common.Model.User
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid UserUid { get; set; }
+        public int PlayerUid { get; set; }
 
         public string UserId { get; set; }
 
