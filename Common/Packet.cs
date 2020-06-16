@@ -17,7 +17,6 @@ namespace Common
         public bool isCorrectPack = false;
         public int SystemCategory;
         public int SystemCommand;
-        public int playerUid;
 
         public void ResetData()
         {
@@ -27,10 +26,9 @@ namespace Common
             LastReceivedPos = 0;
             SystemCategory = 0;
             SystemCommand = 0;
-            playerUid = 0;
         }
 
-        public void SetFirstReceive(int dataLen, int uid, int systemCategory, int systemCommand)
+        public void SetFirstReceive(int dataLen, int systemCategory, int systemCommand)
         {
             //設定封包驗證通過(如果有要接收第二段就會繼續接收)
             isCorrectPack = true;
@@ -39,7 +37,6 @@ namespace Common
             //設定接收封包大小
             infoBytes = new byte[dataLen];
             //設定封包的指令(第一次的時候)
-            playerUid = uid;
             SystemCategory = systemCategory;
             SystemCommand = systemCommand;
         }

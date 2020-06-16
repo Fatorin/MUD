@@ -46,34 +46,20 @@ namespace Server
             //不一致就傳送失敗訊號，並且剔除使用者
             if (infoData.UserPwd != user.UserPwd)
             {
-                Send(player, PacketBuilder.BuildPacket(0, (int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginResp, UserRespLoginPayload.CreatePayload(UserAck.AuthFail)));
+                Send(player, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginResp, UserRespLoginPayload.CreatePayload(UserAck.AuthFail)));
                 return;
             }
             var playerUid = dbContext.Users.Find(infoData.UserId).PlayerUid;
-            player = new Player(playerUid, player.Connection);
 
-            //驗證成功就通知另一個伺服器把人踢了(這邊要用Redis做)
+            //驗證成功就通知在線上的伺服器，把人踢下線
             SockerManager.Instance.PublishLoginToRedis(infoData.PlayerUid);
-            //要重寫與另一個SERVER溝通的方法
             //回傳成功訊息給對應的人
-            Send(player, PacketBuilder.BuildPacket(player.PlayerUid, (int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginResp, UserRespLoginPayload.CreatePayload(UserAck.Success)));
+            Send(player, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginResp, UserRespLoginPayload.CreatePayload(UserAck.Success)));
 
             //回傳留言版最後一百筆資料
             MessageSystem.Instance.GetLastMessage(player);
-            //新增玩家資料
-            SockerManager.Instance.SavePlayer(player);
-        }
-
-        public override void PlayerEnter(Player player, int command, byte[] bytesData)
-        {
-            if (mappings.TryGetValue(command, out var function))
-            {
-                function(player, bytesData);
-            }
-            else
-            {
-                Console.WriteLine($"invalid commnd={command}");
-            }
+            //更新玩家資料
+            SockerManager.Instance.SavePlayerConnect(player.Connection, player);
         }
     }
 }

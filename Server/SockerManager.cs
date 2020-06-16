@@ -22,7 +22,7 @@ namespace Server
     public sealed class SockerManager
     {
         public static SockerManager Instance { get; } = new SockerManager();
-        private static ConcurrentDictionary<int, Player> PlayerConnectDict;
+        private static ConcurrentDictionary<Socket, Player> PlayerConnectDict;
         private static ConcurrentDictionary<int, BaseSystem> SystemDict;
         private static int UsePort;
         private static ApplicationContext dbContext;
@@ -56,9 +56,9 @@ namespace Server
             return dbContext;
         }
 
-        public void SavePlayer(Player player)
+        public void SavePlayerConnect(Socket socket,Player player)
         {
-            PlayerConnectDict.TryAdd(player.PlayerUid, player);
+            PlayerConnectDict.TryAdd(socket, player);
         }
 
         public void StartListening()
@@ -133,11 +133,11 @@ namespace Server
                     {
                         //檢查是不是正常封包 第一會檢查CRC 有的話就改成TRUE
                         //如果沒有CRC那就直接拒絕接收
-                        PacketBuilder.UnPackParam(packetObj.buffer, out var crc, out var playerUid, out var dataLen, out var systemCategory, out var systemCommand);
+                        PacketBuilder.UnPackParam(packetObj.buffer, out var crc, out var dataLen, out var systemCategory, out var systemCommand);
                         if (crc == PacketBuilder.crcCode)
                         {
                             //依照第一筆封包做初始化的行為
-                            packetObj.SetFirstReceive(dataLen, playerUid, systemCategory, systemCommand);
+                            packetObj.SetFirstReceive(dataLen, systemCategory, systemCommand);
                         }
                         else
                         {
@@ -160,8 +160,12 @@ namespace Server
                         {
                             //傳送資料給對應的Command，扣掉前面的CRC,DataLen,Command
                             var pack = packetObj.infoBytes.Skip(PacketBuilder.VerificationLen).ToArray();
-                            if(!PlayerConnectDict.TryGetValue(packetObj.playerUid,out var player)){
-                                player = new Player(0, handler);
+
+                            //傳封包給特定的玩家
+                            if(!PlayerConnectDict.TryGetValue(handler,out var player))
+                            {
+                                //沒有對應的玩家清單，通常這個是走創帳號部分
+                                player = new Player(handler);
                             }
                             baseSystem.PlayerEnter(player, packetObj.SystemCommand, pack);
                         }
@@ -309,7 +313,7 @@ namespace Server
 
         private void InitMapping()
         {
-            PlayerConnectDict = new ConcurrentDictionary<int, Player>();
+            PlayerConnectDict = new ConcurrentDictionary<Socket, Player>();
             SystemDict = new ConcurrentDictionary<int, BaseSystem>();
             //這邊綁定至對應的SYSTEM
             SystemDict.TryAdd((int)SystemCategory.LoginSystem, LoginSystem.Instance);

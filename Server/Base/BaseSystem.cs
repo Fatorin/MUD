@@ -20,7 +20,14 @@ namespace Server.Redis
         public virtual void PlayerEnter(Player player, int command, byte[] bytesData)
         {
             //自行實作將資料接收的部分，並執行對應的內部function
-            throw new NotImplementedException();
+            if (mappings.TryGetValue(command, out var function))
+            {
+                function(player, bytesData);
+            }
+            else
+            {
+                Console.WriteLine($"invalid commnd={command}");
+            }
         }
 
         public virtual void Send(Player player, byte[] byteData)

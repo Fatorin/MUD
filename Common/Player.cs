@@ -12,16 +12,11 @@ namespace Common
 
         public Socket Connection { get; }
         public DateTime LastLoginTime { get; }
-        public Player(int playerUid, Socket connection)
+        public Player(Socket connection)
         {
-            PlayerUid = playerUid;
             Connection = connection;
             LastLoginTime = DateTime.Now;
         }
 
-        public void SetPlayerUid()
-        {
-
-        }
     }
 }
