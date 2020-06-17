@@ -44,14 +44,14 @@ namespace Client
                 return;
             }
 
-            bgWorkerGoFunc(ConnectAndLogin);
+            bgWorkerGoFunc(1);
         }
 
-        private void bgWorkerGoFunc(Action func)
+        private void bgWorkerGoFunc(int systemCategory)
         {
             if (!bgWork.IsBusy)
             {
-                bgWork.RunWorkerAsync(func);
+                bgWork.RunWorkerAsync(systemCategory);
             }
         }
 

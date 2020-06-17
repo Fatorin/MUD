@@ -4,7 +4,8 @@ using System.Text;
 
 namespace Client
 {
-    class LoginHandler
+    public class LoginHandler
     {
+
     }
 }
