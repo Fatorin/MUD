@@ -30,14 +30,14 @@ namespace Client
         {
             var rand = new Random().Next(1, 3);
             serverPort = GlobalSetting.PortNum1;
-            if (rand == 1)
+            /*if (rand == 1)
             {
                 serverPort = GlobalSetting.PortNum1;
             }
             else
             {
                 serverPort = GlobalSetting.PortNum2;
-            }
+            }*/
         }
 
         public void StartClientAndLogin(User userInfo)
@@ -173,7 +173,7 @@ namespace Client
             }
         }
 
-        private void Send(Socket client, byte[] byteData)
+        public void Send(Socket client, byte[] byteData)
         {
             // Begin sending the data to the remote device.  
             client.BeginSend(byteData, 0, byteData.Length, 0,
