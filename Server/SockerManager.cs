@@ -3,6 +3,7 @@ using Common.Model.Command;
 using Common.Model.Message;
 using Common.Model.User;
 using Newtonsoft.Json;
+using Server.Base;
 using Server.PostgreSQL;
 using Server.Redis;
 using StackExchange.Redis;

@@ -1,8 +1,11 @@
-﻿using Common;
+﻿using Client.Base;
+using Common;
 using Common.Model.Command;
 using Common.Model.User;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -13,8 +16,7 @@ namespace Client
     class SocketClientManager
     {
         public static SocketClientManager Instance { get; } = new SocketClientManager();
-        private static Dictionary<int, Action> CommandReqDict = new Dictionary<int, Action>();
-        private static Dictionary<int, Action<byte[]>> CommandRespDict = new Dictionary<int, Action<byte[]>>();
+        private static ConcurrentDictionary<int, BaseClientSystem> SystemDict;
         private static int serverPort;
         private static Socket socketClient;
 
@@ -61,13 +63,13 @@ namespace Client
                     new AsyncCallback(ConnectCallback), socketClient);
                 connectDone.WaitOne();
 
-               // Send test data to the remote device.
-               Send(socketClient, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem,(int)UserCommand.UserLoginReq, UserReqLoginPayload.CreatePayload(userInfo)));
-               sendDone.WaitOne();
+                // Send test data to the remote device.
+                Send(socketClient, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginReq, UserReqLoginPayload.CreatePayload(userInfo)));
+                sendDone.WaitOne();
 
-               // Receive the response from the remote device.
-               Receive(socketClient);
-               receiveDone.WaitOne();
+                // Receive the response from the remote device.
+                Receive(socketClient);
+                receiveDone.WaitOne();
             }
             catch (Exception e)
             {
@@ -150,10 +152,15 @@ namespace Client
 
                     if (packetObj.ReceiveLen == 0)
                     {
-                        //執行對應的FUNC
+                        //傳送資料給對應的Command，扣掉前面的CRC,DataLen,Command
+                        var pack = packetObj.infoBytes.Skip(PacketBuilder.VerificationLen).ToArray();
+                        if (SystemDict.TryGetValue(packetObj.SystemCategory, out var baseClientSystem))
                         {
                             Program.mainUI.ShowLogOnResult("Not mapping function.");
                         }
+                        //執行對應的FUNC
+                        baseClientSystem.PlayerEnter(packetObj.SystemCommand, pack);
+
                         //接收完成
                         receiveDone.Set();
                         //開始接收新的封包

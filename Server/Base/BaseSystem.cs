@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Server.Redis
+namespace Server.Base
 {
     public class BaseSystem
     {
