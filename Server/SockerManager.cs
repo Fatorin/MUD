@@ -166,8 +166,8 @@ namespace Server
                             if (!PlayerConnectDict.TryGetValue(handler.RemoteEndPoint.ToString(), out var player))
                             {
                                 //沒有對應的玩家清單，通常這個是走創帳號部分
-                                //幫他建立一個Player
-                                player = new Player(handler);
+                                //幫他建立一個Player，LoginSystem會更新資料
+                                player = new Player(handler,0);
                             }
                             baseSystem.PlayerEnter(player, packetObj.SystemCommand, pack);
                         }

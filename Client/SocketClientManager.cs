@@ -1,4 +1,5 @@
 ﻿using Client.Base;
+using Client.ClientSystem;
 using Common;
 using Common.Model.Command;
 using Common.Model.User;
@@ -32,6 +33,10 @@ namespace Client
         {
             var rand = new Random().Next(1, 3);
             serverPort = GlobalSetting.PortNum1;
+            SystemDict = new ConcurrentDictionary<int, BaseClientSystem>();
+            SystemDict.TryAdd((int)SystemCategory.LoginSystem, LoginClientSystem.Instance);
+            SystemDict.TryAdd((int)SystemCategory.MessageSystem, MessageClientSystem.Instance);
+            SystemDict.TryAdd((int)SystemCategory.PlayerSystem, PlayerClientSystem.Instance);
             /*if (rand == 1)
             {
                 serverPort = GlobalSetting.PortNum1;
@@ -64,7 +69,7 @@ namespace Client
                 connectDone.WaitOne();
 
                 // Send test data to the remote device.
-                Send(socketClient, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginReq, UserReqLoginPayload.CreatePayload(userInfo)));
+                Send(socketClient, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginReq, UserLoginReqPayload.CreatePayload(userInfo)));
                 sendDone.WaitOne();
 
                 // Receive the response from the remote device.
@@ -154,12 +159,15 @@ namespace Client
                     {
                         //傳送資料給對應的Command，扣掉前面的CRC,DataLen,Command
                         var pack = packetObj.infoBytes.Skip(PacketBuilder.VerificationLen).ToArray();
+                        Program.mainUI.ShowLogOnResult($"SystemCategory={packetObj.SystemCategory}, SystemCommand={packetObj.SystemCommand}");
                         if (SystemDict.TryGetValue(packetObj.SystemCategory, out var baseClientSystem))
+                        {
+                            baseClientSystem.PlayerEnter(packetObj.SystemCommand, pack);
+                        }
+                        else
                         {
                             Program.mainUI.ShowLogOnResult("Not mapping function.");
                         }
-                        //執行對應的FUNC
-                        baseClientSystem.PlayerEnter(packetObj.SystemCommand, pack);
 
                         //接收完成
                         receiveDone.Set();

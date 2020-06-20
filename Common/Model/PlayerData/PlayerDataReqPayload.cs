@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Common.Model.User
+namespace Common.Model.PlayerData
 {
-	public static class UserReqLoginPayload
-	{
-		public static byte[] CreatePayload(User infoData)
+    public class PlayerDataReqPayload
+    {
+		public static byte[] CreatePayload(int playerId)
 		{
 			byte[] byteArray;
 			System.IO.MemoryStream memoryStream = new System.IO.MemoryStream();
 			System.IO.BinaryWriter binaryWriter = new System.IO.BinaryWriter(memoryStream);
-			if ((infoData != null))
+			if ((playerId != 0))
 			{
 				binaryWriter.Write(true);
-				UserReqLoginPayload.BinaryWriter(binaryWriter, infoData);
+				PlayerDataReqPayload.BinaryWriter(binaryWriter, playerId);
 			}
 			else
 			{
@@ -26,46 +26,43 @@ namespace Common.Model.User
 			return byteArray;
 		}
 
-		public static void ParsePayload(byte[] payload, out User infoData)
+		public static void ParsePayload(byte[] payload, out int playerId)
 		{
 			System.IO.MemoryStream memoryStream = new System.IO.MemoryStream(payload);
 			System.IO.BinaryReader binaryReader = new System.IO.BinaryReader(memoryStream);
 			if ((binaryReader.ReadBoolean() == true))
 			{
-				UserReqLoginPayload.BinaryReader(binaryReader, out infoData);
+				PlayerDataReqPayload.BinaryReader(binaryReader, out playerId);
 			}
 			else
 			{
-				infoData = default(User);
+				playerId = 0;
 			}
 			binaryReader.Close();
 			memoryStream.Close();
 		}
 
-		public static void BinaryWriter(System.IO.BinaryWriter binaryWriter, User obj)
+		public static void BinaryWriter(System.IO.BinaryWriter binaryWriter, int obj)
 		{
-			if ((obj != null))
+			if ((obj != 0))
 			{
 				binaryWriter.Write(true);
-				binaryWriter.Write(obj.UserId);
-				binaryWriter.Write(obj.UserPwd);
+				binaryWriter.Write(obj);
 			}
 			else
 			{
 				binaryWriter.Write(false);
 			}
 		}
-		public static void BinaryReader(System.IO.BinaryReader binaryReader, out User obj)
+		public static void BinaryReader(System.IO.BinaryReader binaryReader, out int obj)
 		{
 			if ((binaryReader.ReadBoolean() == true))
 			{
-				obj = new User();
-				obj.UserId = binaryReader.ReadString();
-				obj.UserPwd = binaryReader.ReadString();
+				obj = binaryReader.ReadInt32();
 			}
 			else
 			{
-				obj = default(User);
+				obj = 0;
 			}
 		}
 	}

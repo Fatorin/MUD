@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Model.Command;
 using Common.Model.User;
 using System;
 using System.Collections.Generic;
@@ -44,7 +45,7 @@ namespace Client
                 return;
             }
 
-            bgWorkerGoFunc(1);
+            bgWorkerGoFunc((int)SystemCategory.LoginSystem);
         }
 
         private void bgWorkerGoFunc(int systemCategory)

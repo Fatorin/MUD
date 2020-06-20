@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Common.Model.User
 {
-	public static class UserRespLoginPayload
+	public static class UserLoginRespPayload
 	{
 		public static byte[] CreatePayload(UserAck ackCode)
 		{

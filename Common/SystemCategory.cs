@@ -8,5 +8,6 @@ namespace Common.Model.Command
     {
         LoginSystem = 1111,
         MessageSystem = 2222,
+        PlayerSystem = 3333,
     }
 }

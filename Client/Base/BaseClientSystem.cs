@@ -16,7 +16,15 @@ namespace Client.Base
 
         public virtual void PlayerEnter(int systemCommand, byte[] data)
         {
-            //各自實作
+            //自行實作將資料接收的部分，並執行對應的內部function
+            if (mappings.TryGetValue(systemCommand, out var function))
+            {
+                function(data);
+            }
+            else
+            {
+                Console.WriteLine($"invalid commnd={systemCommand}");
+            }
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Server
             //init mapping的程式
         }
 
-        public void GetLastMessage(Player player)
+        public void SendLastMessage(Player player)
         {
             var values = RedisHelper.GetRedisDb(RedisHelper.RedisDbNum.MsgData).ListRange(GetSystemRedisKey(), -100, -1);
             var MsgInfoList = new List<Message>();
@@ -34,7 +34,7 @@ namespace Server
             {
                 MsgInfoList.Add(new Message { MessageString = value });
             }
-            Send(player, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem, (int)MessageCommand.MessageResp, MessageRespPayload.CreatePayload(MessageAck.Success, MsgInfoList.ToArray())));
+            Send(player, PacketBuilder.BuildPacket((int)SystemCategory.MessageSystem, (int)MessageCommand.MessageResp, MessageRespPayload.CreatePayload(MessageAck.Success, MsgInfoList.ToArray())));
         }
 
         private void MessageReq(Player player, byte[] byteArray)
@@ -49,6 +49,11 @@ namespace Server
         public void SendMsgToAll(Message[] infoDatas)
         {
             Broadcast(PacketBuilder.BuildPacket((int)SystemCategory.MessageSystem, (int)MessageCommand.MessageResp, MessageRespPayload.CreatePayload(MessageAck.Success, infoDatas.ToArray())));
+        }
+
+        public Message GetOneInfoDataFromRedis(IDatabase redisDb, int playerUid)
+        {
+            throw new NotImplementedException();
         }
 
         //實作各Redis

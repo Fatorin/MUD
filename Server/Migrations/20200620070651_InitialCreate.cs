@@ -12,7 +12,7 @@ namespace Server.Migrations
                 columns: table => new
                 {
                     PlayerUid = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     UserId = table.Column<string>(nullable: true),
                     UserPwd = table.Column<string>(nullable: true)
                 },

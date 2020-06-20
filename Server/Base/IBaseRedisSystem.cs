@@ -9,9 +9,11 @@ namespace Server.Base
     {
         public string GetSystemRedisKey();
 
+        public T GetOneInfoDataFromRedis(IDatabase redisDb, int playerUid);
+        
         public void SaveOneInfoDataToRedis(IDatabase redisDb, T InfoData);
 
-        public void SaveMultiInfoDataToRedis(IDatabase redisDb, List<T> InfoDatas);
+        public void SaveMultiInfoDataToRedis(IDatabase redisDb, List<T> infoDatas);
 
         public void SetExpiry(IDatabase redisDb);
     }

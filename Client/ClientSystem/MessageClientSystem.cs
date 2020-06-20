@@ -16,11 +16,6 @@ namespace Client.ClientSystem
             mappings.TryAdd((int)MessageCommand.MessageResp, MessageResp);
         }
 
-        public override void PlayerEnter(int systemCommand, byte[] data)
-        {
-            base.PlayerEnter(systemCommand, data);
-        }
-
         public void MessageReq(string data)
         {
 
@@ -28,7 +23,12 @@ namespace Client.ClientSystem
 
         public void MessageResp(byte[] data)
         {
-            Program.mainUI.ShowLogOnResult("");
+            MessageRespPayload.ParsePayload(data, out var ackCode, out var messageInfos);
+            Program.mainUI.ShowLogOnResult($"ackCode={ackCode}");
+            foreach(Message message in messageInfos)
+            {
+                Program.mainUI.ShowLogOnResult($"message={message.MessageString}");
+            }
         }
     }
 }
