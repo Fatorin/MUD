@@ -7,11 +7,11 @@ using System.Text;
 
 namespace Client.ClientSystem
 {
-    public class LoginClientSystem : BaseClientSystem
+    public class UserClientSystem : BaseClientSystem
     {
-        public static LoginClientSystem Instance { get; } = new LoginClientSystem();
+        public static UserClientSystem Instance { get; } = new UserClientSystem();
 
-        public LoginClientSystem()
+        public UserClientSystem()
         {
             mappings.TryAdd((int)UserCommand.UserLoginResp, LoginResp);
         }

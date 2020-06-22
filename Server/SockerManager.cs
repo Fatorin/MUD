@@ -318,7 +318,7 @@ namespace Server
             PlayerConnectDict = new ConcurrentDictionary<string, Player>();
             SystemDict = new ConcurrentDictionary<int, BaseSystem>();
             //這邊綁定至對應的SYSTEM
-            SystemDict.TryAdd((int)SystemCategory.LoginSystem, LoginSystem.Instance);
+            SystemDict.TryAdd((int)SystemCategory.UserSystem, UserSystem.Instance);
             SystemDict.TryAdd((int)SystemCategory.MessageSystem, MessageSystem.Instance);
         }
 

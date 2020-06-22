@@ -15,14 +15,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 
-namespace Server
+namespace Server.ServerSystem
 {
-    public sealed class LoginSystem : BaseSystem, IBaseRedisSystem<PlayerData>
+    public sealed class UserSystem : BaseSystem
     {
         //Singleton Mode
-        public static LoginSystem Instance { get; } = new LoginSystem();
+        public static UserSystem Instance { get; } = new UserSystem();
 
-        public LoginSystem()
+        public UserSystem()
         {
             mappings.TryAdd((int)UserCommand.UserLoginReq, UserLoginReq);
         }
@@ -54,58 +54,26 @@ namespace Server
             //不一致就傳送失敗訊號，並且剔除使用者
             if (infoData.UserPwd != user.UserPwd)
             {
-                Send(player, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginResp, UserLoginRespPayload.CreatePayload(UserAck.AuthFail)));
+                Send(player, PacketBuilder.BuildPacket((int)SystemCategory.UserSystem, (int)UserCommand.UserLoginResp, UserLoginRespPayload.CreatePayload(UserAck.AuthFail)));
                 return;
             }
 
             //更新Player資料 從DB重撈
-            player.PlayerData = GetOneInfoDataFromRedis(RedisHelper.GetRedisDb(RedisHelper.RedisDbNum.Connect), user.PlayerUid);
+            player.PlayerData = PlayerDataSystem.Instance.GetOneInfoDataFromRedis(RedisHelper.GetRedisDb(RedisHelper.RedisDbNum.Connect), user.PlayerUid);
 
             //驗證成功就通知在線上的伺服器，把人踢下線
             SockerManager.Instance.PublishLoginToRedis(user.PlayerUid);
             //回傳成功訊息給對應的人
-            Send(player, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginResp, UserLoginRespPayload.CreatePayload(UserAck.Success)));
+            Send(player, PacketBuilder.BuildPacket((int)SystemCategory.UserSystem, (int)UserCommand.UserLoginResp, UserLoginRespPayload.CreatePayload(UserAck.Success)));
             //傳送玩家資料給他
-            Send(player, PacketBuilder.BuildPacket((int)SystemCategory.PlayerSystem, (int)PlayerDataCommand.PlayerDataResp, PlayerDataRespPayload.CreatePayload(PlayerDataAck.Success, player.PlayerData)));
+            Send(player, PacketBuilder.BuildPacket((int)SystemCategory.PlayerDataSystem, (int)PlayerDataCommand.PlayerDataResp, PlayerDataRespPayload.CreatePayload(PlayerDataAck.Success, player.PlayerData)));
             //儲存玩家資料進Redis
-            SaveOneInfoDataToRedis(RedisHelper.GetRedisDb(RedisHelper.RedisDbNum.Connect), player.PlayerData);
+            PlayerDataSystem.Instance.SaveOneInfoDataToRedis(RedisHelper.GetRedisDb(RedisHelper.RedisDbNum.Connect), player.PlayerData);
             //回傳留言版最後一百筆資料
             MessageSystem.Instance.SendLastMessage(player);
             //更新玩家資料
             SockerManager.Instance.SavePlayerConnect(player.Connection.RemoteEndPoint.ToString(), player);
         }
 
-        public string GetSystemRedisKey()
-        {
-            return nameof(PlayerData);
-        }
-
-        public PlayerData GetOneInfoDataFromRedis(IDatabase redisDb, int playerUid)
-        {
-            var value = redisDb.HashGet(GetSystemRedisKey(), playerUid);
-            return JsonConvert.DeserializeObject<PlayerData>(value);
-        }
-
-        public void SaveOneInfoDataToRedis(IDatabase redisDb, PlayerData infoData)
-        {
-            redisDb.HashSet(GetSystemRedisKey(), infoData.PlayerUid, JsonConvert.SerializeObject(infoData));
-        }
-
-        public void SaveMultiInfoDataToRedis(IDatabase redisDb, List<PlayerData> infoDatas)
-        {
-            var hashes = new List<HashEntry>();
-
-            infoDatas.ForEach(element =>
-            {
-                hashes.Add(new HashEntry(element.PlayerUid, JsonConvert.SerializeObject(element)));
-            });
-
-            redisDb.HashSet(GetSystemRedisKey(), hashes.ToArray());
-        }
-
-        public void SetExpiry(IDatabase redisDb)
-        {
-            redisDb.KeyExpire(GetSystemRedisKey(), TimeSpan.FromDays(GlobalSetting.RedisKeyExpireNormalDay));
-        }
     }
 }

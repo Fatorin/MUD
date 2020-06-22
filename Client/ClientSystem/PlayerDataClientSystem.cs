@@ -6,11 +6,11 @@ using System.Text;
 
 namespace Client.ClientSystem
 {
-    public class PlayerClientSystem : BaseClientSystem
+    public class PlayerDataClientSystem : BaseClientSystem
     {
-        public static PlayerClientSystem Instance { get; } = new PlayerClientSystem();
+        public static PlayerDataClientSystem Instance { get; } = new PlayerDataClientSystem();
 
-        public PlayerClientSystem()
+        public PlayerDataClientSystem()
         {
             mappings.TryAdd((int)PlayerDataCommand.PlayerDataResp, OnPlayerDataResp);
         }

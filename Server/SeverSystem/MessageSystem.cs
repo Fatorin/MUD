@@ -13,7 +13,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Server
+namespace Server.ServerSystem
 {
     public sealed class MessageSystem : BaseSystem, IBaseRedisSystem<Message>
     {

@@ -34,9 +34,9 @@ namespace Client
             var rand = new Random().Next(1, 3);
             serverPort = GlobalSetting.PortNum1;
             SystemDict = new ConcurrentDictionary<int, BaseClientSystem>();
-            SystemDict.TryAdd((int)SystemCategory.LoginSystem, LoginClientSystem.Instance);
+            SystemDict.TryAdd((int)SystemCategory.UserSystem, UserClientSystem.Instance);
             SystemDict.TryAdd((int)SystemCategory.MessageSystem, MessageClientSystem.Instance);
-            SystemDict.TryAdd((int)SystemCategory.PlayerSystem, PlayerClientSystem.Instance);
+            SystemDict.TryAdd((int)SystemCategory.PlayerDataSystem, PlayerDataClientSystem.Instance);
             /*if (rand == 1)
             {
                 serverPort = GlobalSetting.PortNum1;
@@ -69,7 +69,7 @@ namespace Client
                 connectDone.WaitOne();
 
                 // Send test data to the remote device.
-                Send(socketClient, PacketBuilder.BuildPacket((int)SystemCategory.LoginSystem, (int)UserCommand.UserLoginReq, UserLoginReqPayload.CreatePayload(userInfo)));
+                Send(socketClient, PacketBuilder.BuildPacket((int)SystemCategory.UserSystem, (int)UserCommand.UserLoginReq, UserLoginReqPayload.CreatePayload(userInfo)));
                 sendDone.WaitOne();
 
                 // Receive the response from the remote device.

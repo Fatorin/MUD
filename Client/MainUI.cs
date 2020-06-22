@@ -45,7 +45,7 @@ namespace Client
                 return;
             }
 
-            bgWorkerGoFunc((int)SystemCategory.LoginSystem);
+            bgWorkerGoFunc((int)SystemCategory.UserSystem);
         }
 
         private void bgWorkerGoFunc(int systemCategory)
@@ -93,6 +93,11 @@ namespace Client
             {
                 tbResult.AppendText(str + Environment.NewLine);
             }
+        }
+
+        public void UpdatePlayerInfo(Player player)
+        {
+
         }
     }
 
