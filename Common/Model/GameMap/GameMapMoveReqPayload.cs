@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Common.Model.GameEvent
+namespace Common.Model.GameMap
 {
-    class GameEventCommand
+    public class GameMapMoveReqPayload
     {
     }
 }

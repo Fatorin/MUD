@@ -7,6 +7,8 @@ namespace Common.Model.GameMap
     public enum GameMapCommand
     {
         MoveReq,
+        EventReq,
         MoveResp,
+        EventResp,
     }
 }
