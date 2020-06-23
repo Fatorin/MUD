@@ -9,6 +9,7 @@ namespace Common.Model.Command
         UserSystem = 1111,
         MessageSystem = 2222,
         PlayerDataSystem = 3333,
-        GameMapSystem = 4444
+        GameMapSystem = 4444,
+        GameEventSystem = 5555,
     }
 }

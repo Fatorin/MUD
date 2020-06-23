@@ -13,15 +13,15 @@ namespace Server.SeverSystem
 
         public GameMapSystem()
         {
-
+            mappings.TryAdd((int)GameMapCommand.MoveReq, GameMapMoveReq);
         }
 
         public void GameMapMoveReq(Player player,byte[] byteArray)
         {
-
+            //讀取玩家REQ 回傳RESP
         }
 
-        private bool CheckBorder(GameMap gameMap, int x, int y)
+        private bool isBorder(GameMap gameMap, int x, int y)
         {
             if(x > gameMap.MapSizeX || x< 0)
             {
