@@ -36,7 +36,11 @@
             this.tbResult = new System.Windows.Forms.TextBox();
             this.btnLogin = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
-            this.gbPlayerInfo = new System.Windows.Forms.GroupBox();
+            this.gbPlayerData = new System.Windows.Forms.GroupBox();
+            this.tbMapPos = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.tbMapSeed = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.tbPlayerExp = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
@@ -52,11 +56,13 @@
             this.label5 = new System.Windows.Forms.Label();
             this.tbPlayerName = new System.Windows.Forms.TextBox();
             this.tbPlayerUid = new System.Windows.Forms.TextBox();
-            this.tbMapName = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.tbMapPos = new System.Windows.Forms.Label();
-            this.gbPlayerInfo.SuspendLayout();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.gbContolPlayer = new System.Windows.Forms.GroupBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.gbPlayerData.SuspendLayout();
+            this.gbContolPlayer.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbId
@@ -130,34 +136,68 @@
             this.label4.TabIndex = 7;
             this.label4.Text = "玩家編號：";
             // 
-            // gbPlayerInfo
+            // gbPlayerData
             // 
-            this.gbPlayerInfo.Controls.Add(this.tbMapPos);
-            this.gbPlayerInfo.Controls.Add(this.textBox2);
-            this.gbPlayerInfo.Controls.Add(this.label12);
-            this.gbPlayerInfo.Controls.Add(this.tbMapName);
-            this.gbPlayerInfo.Controls.Add(this.label11);
-            this.gbPlayerInfo.Controls.Add(this.tbPlayerExp);
-            this.gbPlayerInfo.Controls.Add(this.label10);
-            this.gbPlayerInfo.Controls.Add(this.tbPlayerLevel);
-            this.gbPlayerInfo.Controls.Add(this.label9);
-            this.gbPlayerInfo.Controls.Add(this.tbPlayerDef);
-            this.gbPlayerInfo.Controls.Add(this.label8);
-            this.gbPlayerInfo.Controls.Add(this.tbPlayerAtk);
-            this.gbPlayerInfo.Controls.Add(this.label7);
-            this.gbPlayerInfo.Controls.Add(this.tbPlayerMp);
-            this.gbPlayerInfo.Controls.Add(this.label6);
-            this.gbPlayerInfo.Controls.Add(this.tbPlayerHp);
-            this.gbPlayerInfo.Controls.Add(this.label5);
-            this.gbPlayerInfo.Controls.Add(this.tbPlayerName);
-            this.gbPlayerInfo.Controls.Add(this.tbPlayerUid);
-            this.gbPlayerInfo.Controls.Add(this.label4);
-            this.gbPlayerInfo.Location = new System.Drawing.Point(319, 40);
-            this.gbPlayerInfo.Name = "gbPlayerInfo";
-            this.gbPlayerInfo.Size = new System.Drawing.Size(200, 385);
-            this.gbPlayerInfo.TabIndex = 8;
-            this.gbPlayerInfo.TabStop = false;
-            this.gbPlayerInfo.Text = "玩家資訊";
+            this.gbPlayerData.Controls.Add(this.tbMapPos);
+            this.gbPlayerData.Controls.Add(this.textBox2);
+            this.gbPlayerData.Controls.Add(this.label12);
+            this.gbPlayerData.Controls.Add(this.tbMapSeed);
+            this.gbPlayerData.Controls.Add(this.label11);
+            this.gbPlayerData.Controls.Add(this.tbPlayerExp);
+            this.gbPlayerData.Controls.Add(this.label10);
+            this.gbPlayerData.Controls.Add(this.tbPlayerLevel);
+            this.gbPlayerData.Controls.Add(this.label9);
+            this.gbPlayerData.Controls.Add(this.tbPlayerDef);
+            this.gbPlayerData.Controls.Add(this.label8);
+            this.gbPlayerData.Controls.Add(this.tbPlayerAtk);
+            this.gbPlayerData.Controls.Add(this.label7);
+            this.gbPlayerData.Controls.Add(this.tbPlayerMp);
+            this.gbPlayerData.Controls.Add(this.label6);
+            this.gbPlayerData.Controls.Add(this.tbPlayerHp);
+            this.gbPlayerData.Controls.Add(this.label5);
+            this.gbPlayerData.Controls.Add(this.tbPlayerName);
+            this.gbPlayerData.Controls.Add(this.tbPlayerUid);
+            this.gbPlayerData.Controls.Add(this.label4);
+            this.gbPlayerData.Location = new System.Drawing.Point(319, 40);
+            this.gbPlayerData.Name = "gbPlayerData";
+            this.gbPlayerData.Size = new System.Drawing.Size(200, 385);
+            this.gbPlayerData.TabIndex = 8;
+            this.gbPlayerData.TabStop = false;
+            this.gbPlayerData.Text = "玩家資訊";
+            // 
+            // tbMapPos
+            // 
+            this.tbMapPos.AutoSize = true;
+            this.tbMapPos.Location = new System.Drawing.Point(6, 298);
+            this.tbMapPos.Name = "tbMapPos";
+            this.tbMapPos.Size = new System.Drawing.Size(43, 15);
+            this.tbMapPos.TabIndex = 7;
+            this.tbMapPos.Text = "座標：";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(79, 295);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.ReadOnly = true;
+            this.textBox2.Size = new System.Drawing.Size(100, 23);
+            this.textBox2.TabIndex = 8;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 269);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(67, 15);
+            this.label12.TabIndex = 7;
+            this.label12.Text = "地圖名稱：";
+            // 
+            // tbMapSeed
+            // 
+            this.tbMapSeed.Location = new System.Drawing.Point(79, 266);
+            this.tbMapSeed.Name = "tbMapSeed";
+            this.tbMapSeed.ReadOnly = true;
+            this.tbMapSeed.Size = new System.Drawing.Size(100, 23);
+            this.tbMapSeed.TabIndex = 8;
             // 
             // label11
             // 
@@ -286,46 +326,62 @@
             this.tbPlayerUid.Size = new System.Drawing.Size(100, 23);
             this.tbPlayerUid.TabIndex = 8;
             // 
-            // tbMapName
+            // button1
             // 
-            this.tbMapName.Location = new System.Drawing.Point(79, 266);
-            this.tbMapName.Name = "tbMapName";
-            this.tbMapName.ReadOnly = true;
-            this.tbMapName.Size = new System.Drawing.Size(100, 23);
-            this.tbMapName.TabIndex = 8;
+            this.button1.Location = new System.Drawing.Point(10, 50);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 9;
+            this.button1.Text = "向左走";
+            this.button1.UseVisualStyleBackColor = true;
             // 
-            // label12
+            // button2
             // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 269);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(67, 15);
-            this.label12.TabIndex = 7;
-            this.label12.Text = "座標名稱：";
+            this.button2.Location = new System.Drawing.Point(90, 20);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 9;
+            this.button2.Text = "向前走";
+            this.button2.UseVisualStyleBackColor = true;
             // 
-            // textBox2
+            // gbContolPlayer
             // 
-            this.textBox2.Location = new System.Drawing.Point(79, 295);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(100, 23);
-            this.textBox2.TabIndex = 8;
+            this.gbContolPlayer.Controls.Add(this.button4);
+            this.gbContolPlayer.Controls.Add(this.button3);
+            this.gbContolPlayer.Controls.Add(this.button1);
+            this.gbContolPlayer.Controls.Add(this.button2);
+            this.gbContolPlayer.Location = new System.Drawing.Point(533, 345);
+            this.gbContolPlayer.Name = "gbContolPlayer";
+            this.gbContolPlayer.Size = new System.Drawing.Size(255, 80);
+            this.gbContolPlayer.TabIndex = 9;
+            this.gbContolPlayer.TabStop = false;
+            this.gbContolPlayer.Text = "人物行動控制";
             // 
-            // tbMapPos
+            // button3
             // 
-            this.tbMapPos.AutoSize = true;
-            this.tbMapPos.Location = new System.Drawing.Point(6, 298);
-            this.tbMapPos.Name = "tbMapPos";
-            this.tbMapPos.Size = new System.Drawing.Size(43, 15);
-            this.tbMapPos.TabIndex = 7;
-            this.tbMapPos.Text = "座標：";
+            this.button3.Location = new System.Drawing.Point(90, 50);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 9;
+            this.button3.Text = "向後走";
+            this.button3.UseVisualStyleBackColor = true;
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(170, 50);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(75, 23);
+            this.button4.TabIndex = 9;
+            this.button4.Text = "向右走";
+            this.button4.UseVisualStyleBackColor = true;
             // 
             // MainUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.gbPlayerInfo);
+            this.Controls.Add(this.gbContolPlayer);
+            this.Controls.Add(this.gbPlayerData);
             this.Controls.Add(this.btnLogin);
             this.Controls.Add(this.tbResult);
             this.Controls.Add(this.label3);
@@ -335,8 +391,9 @@
             this.Controls.Add(this.tbId);
             this.Name = "MainUI";
             this.Text = "UMD";
-            this.gbPlayerInfo.ResumeLayout(false);
-            this.gbPlayerInfo.PerformLayout();
+            this.gbPlayerData.ResumeLayout(false);
+            this.gbPlayerData.PerformLayout();
+            this.gbContolPlayer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -352,7 +409,7 @@
         private System.Windows.Forms.TextBox tbResult;
         private System.Windows.Forms.Button btnLogin;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.GroupBox gbPlayerInfo;
+        private System.Windows.Forms.GroupBox gbPlayerData;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tbPlayerName;
         private System.Windows.Forms.TextBox tbPlayerUid;
@@ -371,7 +428,12 @@
         private System.Windows.Forms.Label tbMapPos;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TextBox tbMapName;
+        private System.Windows.Forms.TextBox tbMapSeed;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.GroupBox gbContolPlayer;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
     }
 }
 

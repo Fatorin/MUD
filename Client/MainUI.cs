@@ -21,22 +21,31 @@ namespace Client
     {
         private delegate void UpdateShowLog(string text);
         private delegate void UpdatePlayerData(PlayerData playerData);
-        private BackgroundWorker bgWork;
+        private delegate void ControlPlayerDataAndControl(bool isVisible);
+        private delegate void ControlPlayerLogin(bool isEnable);
 
         public MainUI()
         {
             InitializeComponent();
-            InitBackgroundWorker();
+            InitDisableInfoAndControl(false);
         }
 
-        private void InitBackgroundWorker()
+        public void InitDisableInfoAndControl(bool isVisible)
         {
-            //因為 Net Core Form不支援只好自己手寫一個
-            bgWork = new BackgroundWorker();
-            bgWork.WorkerReportsProgress = true;
-            bgWork.WorkerSupportsCancellation = true;
-            bgWork.DoWork += new DoWorkEventHandler(bgWork_DoWork);
-            bgWork.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWork_RunWorkerCompleted);
+            if (InvokeRequired)
+            {
+                BeginInvoke(new ControlPlayerDataAndControl(InitDisableInfoAndControl), new object[] { isVisible }); ;
+            }
+            else
+            {
+                gbPlayerData.Visible = isVisible;
+                gbContolPlayer.Visible = isVisible;
+            }
+        }
+
+        private void StartRequest(Action action)
+        {
+            Task.Factory.StartNew(action);
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -47,31 +56,9 @@ namespace Client
                 return;
             }
 
-            bgWorkerGoFunc((int)SystemCategory.UserSystem);
-        }
+            btnLogin.Enabled = false;
 
-        private void bgWorkerGoFunc(int systemCategory)
-        {
-            if (!bgWork.IsBusy)
-            {
-                bgWork.RunWorkerAsync(systemCategory);
-            }
-        }
-
-        private void bgWork_DoWork(object sender, DoWorkEventArgs e)
-        {
-            /*if (!CommandReqDict.TryGetValue((int)e.Argument, out var function))
-            {
-                ShowLogOnResult("Not found mapping req function.");
-                return;
-            }
-            function();*/
-            ShowLogOnResult("Func Start.");
-            ConnectAndLogin();
-        }
-        private void bgWork_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            ShowLogOnResult("Func Finish.");
+            StartRequest(ConnectAndLogin);
         }
 
         private void ConnectAndLogin()
@@ -97,6 +84,18 @@ namespace Client
             }
         }
 
+        public void ControlLoginBtn(bool isEnbale)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new ControlPlayerLogin(ControlLoginBtn), new object[] { isEnbale }); ;
+            }
+            else
+            {
+                btnLogin.Enabled = isEnbale;
+            }
+        }
+
         public void ShowPlayerInfo(PlayerData playerData)
         {
             if (InvokeRequired)
@@ -113,6 +112,8 @@ namespace Client
                 tbPlayerDef.Text = $"{playerData.Def}";
                 tbPlayerLevel.Text = $"{playerData.Level}";
                 tbPlayerExp.Text = $"{playerData.Exp}";
+                tbMapSeed.Text = $"{playerData.Exp}";
+                tbMapPos.Text = $"[{playerData.PosX},{playerData.PosY}]";
             }
         }
     }

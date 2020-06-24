@@ -38,7 +38,7 @@ namespace Common.Model.PlayerData
         public int PosY { get; set; }
         public PlayerFaceEnum PlayeyFace { get; set; }
         public PlayerStatusEnum PlayerStatus { get; set; }
-        public enum PlayerFaceEnum { Front, Left, Right, Back };
+        public enum PlayerFaceEnum { Front, Left, Right, Back, Empty };
 
         public enum PlayerStatusEnum { Normal, Dead, Stun, Scald, Frostbite };
 

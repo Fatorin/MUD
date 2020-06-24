@@ -17,9 +17,9 @@ namespace Client
     class SocketClientManager
     {
         public static SocketClientManager Instance { get; } = new SocketClientManager();
-        private static ConcurrentDictionary<int, BaseClientSystem> SystemDict;
-        private static int serverPort;
-        private static Socket socketClient;
+        private static ConcurrentDictionary<int, BaseClientSystem> _SystemDict;
+        private static int _serverPort;
+        private static Socket _socketClient;
 
         // ManualResetEvent instances signal completion.  
         private static ManualResetEvent connectDone =
@@ -32,11 +32,11 @@ namespace Client
         public SocketClientManager()
         {
             var rand = new Random().Next(1, 3);
-            serverPort = GlobalSetting.PortNum1;
-            SystemDict = new ConcurrentDictionary<int, BaseClientSystem>();
-            SystemDict.TryAdd((int)SystemCategory.UserSystem, UserClientSystem.Instance);
-            SystemDict.TryAdd((int)SystemCategory.MessageSystem, MessageClientSystem.Instance);
-            SystemDict.TryAdd((int)SystemCategory.PlayerDataSystem, PlayerDataClientSystem.Instance);
+            _serverPort = GlobalSetting.PortNum1;
+            _SystemDict = new ConcurrentDictionary<int, BaseClientSystem>();
+            _SystemDict.TryAdd((int)SystemCategory.UserSystem, UserClientSystem.Instance);
+            _SystemDict.TryAdd((int)SystemCategory.MessageSystem, MessageClientSystem.Instance);
+            _SystemDict.TryAdd((int)SystemCategory.PlayerDataSystem, PlayerDataClientSystem.Instance);
             /*if (rand == 1)
             {
                 serverPort = GlobalSetting.PortNum1;
@@ -57,23 +57,23 @@ namespace Client
                 // remote device is "host.contoso.com".
                 IPHostEntry ipHostInfo = Dns.GetHostEntry("127.0.0.1");
                 IPAddress ipAddress = ipHostInfo.AddressList[0];
-                IPEndPoint remoteEP = new IPEndPoint(ipAddress, serverPort);
+                IPEndPoint remoteEP = new IPEndPoint(ipAddress, _serverPort);
 
                 // Create a TCP/IP socket.  
-                socketClient = new Socket(ipAddress.AddressFamily,
+                _socketClient = new Socket(ipAddress.AddressFamily,
                     SocketType.Stream, ProtocolType.Tcp);
 
                 // Connect to the remote endpoint.  
-                socketClient.BeginConnect(remoteEP,
-                    new AsyncCallback(ConnectCallback), socketClient);
+                _socketClient.BeginConnect(remoteEP,
+                    new AsyncCallback(ConnectCallback), _socketClient);
                 connectDone.WaitOne();
 
                 // Send test data to the remote device.
-                Send(socketClient, PacketBuilder.BuildPacket((int)SystemCategory.UserSystem, (int)UserCommand.UserLoginReq, UserLoginReqPayload.CreatePayload(userInfo)));
+                Send(PacketBuilder.BuildPacket((int)SystemCategory.UserSystem, (int)UserCommand.UserLoginReq, UserLoginReqPayload.CreatePayload(userInfo)));
                 sendDone.WaitOne();
 
                 // Receive the response from the remote device.
-                Receive(socketClient);
+                Receive();
                 receiveDone.WaitOne();
             }
             catch (Exception e)
@@ -100,19 +100,21 @@ namespace Client
             catch (Exception e)
             {
                 Program.mainUI.ShowLogOnResult(e.ToString());
+                //可重連
+                Program.mainUI.ControlLoginBtn(true);
             }
         }
 
-        private void Receive(Socket client)
+        private void Receive()
         {
             try
             {
                 // Create the state object.  
                 Packet packetObj = new Packet();
-                packetObj.workSocket = client;
+                packetObj.workSocket = _socketClient;
 
                 // Begin receiving the data from the remote device.  
-                client.BeginReceive(packetObj.buffer, 0, Packet.BufferSize, 0,
+                _socketClient.BeginReceive(packetObj.buffer, 0, Packet.BufferSize, 0,
                     new AsyncCallback(ReceiveCallback), packetObj);
             }
             catch (Exception e)
@@ -160,7 +162,7 @@ namespace Client
                         //傳送資料給對應的Command，扣掉前面的CRC,DataLen,Command
                         var pack = packetObj.infoBytes.Skip(PacketBuilder.VerificationLen).ToArray();
                         Program.mainUI.ShowLogOnResult($"SystemCategory={packetObj.SystemCategory}, SystemCommand={packetObj.SystemCommand}");
-                        if (SystemDict.TryGetValue(packetObj.SystemCategory, out var baseClientSystem))
+                        if (_SystemDict.TryGetValue(packetObj.SystemCategory, out var baseClientSystem))
                         {
                             baseClientSystem.PlayerEnter(packetObj.SystemCommand, pack);
                         }
@@ -172,7 +174,7 @@ namespace Client
                         //接收完成
                         receiveDone.Set();
                         //開始接收新的封包
-                        Receive(socketClient);
+                        Receive();
                         receiveDone.WaitOne();
                     }
                     else
@@ -188,11 +190,11 @@ namespace Client
             }
         }
 
-        public void Send(Socket client, byte[] byteData)
+        public void Send(byte[] byteData)
         {
             // Begin sending the data to the remote device.  
-            client.BeginSend(byteData, 0, byteData.Length, 0,
-                new AsyncCallback(SendCallback), client);
+            _socketClient.BeginSend(byteData, 0, byteData.Length, 0,
+                new AsyncCallback(SendCallback), _socketClient);
         }
 
         private void SendCallback(IAsyncResult ar)

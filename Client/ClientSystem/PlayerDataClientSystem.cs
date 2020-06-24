@@ -25,7 +25,7 @@ namespace Client.ClientSystem
             }
             
             Program.mainUI.ShowLogOnResult($"ack={ack}");
-
+            Program.mainUI.InitDisableInfoAndControl(true);
             Program.mainUI.ShowPlayerInfo(playerData);
         }
     }

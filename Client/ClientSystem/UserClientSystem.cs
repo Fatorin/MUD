@@ -25,6 +25,10 @@ namespace Client.ClientSystem
         {
             UserLoginRespPayload.ParsePayload(data, out UserAck ack);
             Program.mainUI.ShowLogOnResult($"ack={ack}");
+            if (ack != UserAck.Success)
+            {
+                Program.mainUI.ControlLoginBtn(true);
+            }
         }
     }
 }
