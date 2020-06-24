@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Text;
 
 namespace Common.Model.PlayerData
@@ -19,6 +20,9 @@ namespace Common.Model.PlayerData
             Exp = 0;
             PosX = 0;
             PosY = 0;
+            MapSeed = 0;
+            PlayeyFace = PlayerFaceEnum.Front;
+            PlayerStatus = PlayerStatusEnum.Normal;
         }
         public int PlayerUid { get; set; }
         public string Name { get; set; }
@@ -28,8 +32,15 @@ namespace Common.Model.PlayerData
         public int Def { get; set; }
         public int Level { get; set; }
         public int Exp { get; set; }
+
+        public int MapSeed { get; set; }
         public int PosX { get; set; }
         public int PosY { get; set; }
+        public PlayerFaceEnum PlayeyFace { get; set; }
+        public PlayerStatusEnum PlayerStatus { get; set; }
+        public enum PlayerFaceEnum { Front, Left, Right, Back };
+
+        public enum PlayerStatusEnum { Normal, Dead, Stun, Scald, Frostbite };
 
         public override string ToString()
         {

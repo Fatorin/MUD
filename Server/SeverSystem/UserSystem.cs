@@ -48,6 +48,7 @@ namespace Server.ServerSystem
                 //更新該玩家的資料
                 player.PlayerData.PlayerUid = user.PlayerUid;
                 //未來會做成存在DB或REDIS
+                PlayerDataSystem.Instance.SaveOneInfoDataToRedis(RedisHelper.GetRedisDb(RedisHelper.RedisDbNum.Connect), player.PlayerData);
             }
 
             //建立完帳戶、確認用戶帳密是否一致

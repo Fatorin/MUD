@@ -37,21 +37,25 @@
             this.btnLogin = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.gbPlayerInfo = new System.Windows.Forms.GroupBox();
-            this.tbPlayerUid = new System.Windows.Forms.TextBox();
-            this.tbPlayerName = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.tbPlayerHp = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.tbPlayerMp = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.tbPlayerAtk = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.tbPlayerDef = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.tbPlayerLevel = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.tbPlayerExp = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
+            this.tbPlayerExp = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.tbPlayerLevel = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.tbPlayerDef = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.tbPlayerAtk = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.tbPlayerMp = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tbPlayerHp = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.tbPlayerName = new System.Windows.Forms.TextBox();
+            this.tbPlayerUid = new System.Windows.Forms.TextBox();
+            this.tbMapName = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.tbMapPos = new System.Windows.Forms.Label();
             this.gbPlayerInfo.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -128,6 +132,10 @@
             // 
             // gbPlayerInfo
             // 
+            this.gbPlayerInfo.Controls.Add(this.tbMapPos);
+            this.gbPlayerInfo.Controls.Add(this.textBox2);
+            this.gbPlayerInfo.Controls.Add(this.label12);
+            this.gbPlayerInfo.Controls.Add(this.tbMapName);
             this.gbPlayerInfo.Controls.Add(this.label11);
             this.gbPlayerInfo.Controls.Add(this.tbPlayerExp);
             this.gbPlayerInfo.Controls.Add(this.label10);
@@ -151,106 +159,22 @@
             this.gbPlayerInfo.TabStop = false;
             this.gbPlayerInfo.Text = "玩家資訊";
             // 
-            // tbPlayerUid
+            // label11
             // 
-            this.tbPlayerUid.Location = new System.Drawing.Point(79, 34);
-            this.tbPlayerUid.Name = "tbPlayerUid";
-            this.tbPlayerUid.ReadOnly = true;
-            this.tbPlayerUid.Size = new System.Drawing.Size(100, 23);
-            this.tbPlayerUid.TabIndex = 8;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 240);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(55, 15);
+            this.label11.TabIndex = 7;
+            this.label11.Text = "經驗值：";
             // 
-            // tbPlayerName
+            // tbPlayerExp
             // 
-            this.tbPlayerName.Location = new System.Drawing.Point(79, 63);
-            this.tbPlayerName.Name = "tbPlayerName";
-            this.tbPlayerName.ReadOnly = true;
-            this.tbPlayerName.Size = new System.Drawing.Size(100, 23);
-            this.tbPlayerName.TabIndex = 8;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 66);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(67, 15);
-            this.label5.TabIndex = 7;
-            this.label5.Text = "玩家名稱：";
-            // 
-            // tbPlayerHp
-            // 
-            this.tbPlayerHp.Location = new System.Drawing.Point(79, 92);
-            this.tbPlayerHp.Name = "tbPlayerHp";
-            this.tbPlayerHp.ReadOnly = true;
-            this.tbPlayerHp.Size = new System.Drawing.Size(100, 23);
-            this.tbPlayerHp.TabIndex = 8;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 95);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(55, 15);
-            this.label6.TabIndex = 7;
-            this.label6.Text = "生命值：";
-            // 
-            // tbPlayerMp
-            // 
-            this.tbPlayerMp.Location = new System.Drawing.Point(79, 121);
-            this.tbPlayerMp.Name = "tbPlayerMp";
-            this.tbPlayerMp.ReadOnly = true;
-            this.tbPlayerMp.Size = new System.Drawing.Size(100, 23);
-            this.tbPlayerMp.TabIndex = 8;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 124);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(55, 15);
-            this.label7.TabIndex = 7;
-            this.label7.Text = "魔力值：";
-            // 
-            // tbPlayerAtk
-            // 
-            this.tbPlayerAtk.Location = new System.Drawing.Point(79, 150);
-            this.tbPlayerAtk.Name = "tbPlayerAtk";
-            this.tbPlayerAtk.ReadOnly = true;
-            this.tbPlayerAtk.Size = new System.Drawing.Size(100, 23);
-            this.tbPlayerAtk.TabIndex = 8;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 153);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(55, 15);
-            this.label8.TabIndex = 7;
-            this.label8.Text = "攻擊力：";
-            // 
-            // tbPlayerDef
-            // 
-            this.tbPlayerDef.Location = new System.Drawing.Point(79, 179);
-            this.tbPlayerDef.Name = "tbPlayerDef";
-            this.tbPlayerDef.ReadOnly = true;
-            this.tbPlayerDef.Size = new System.Drawing.Size(100, 23);
-            this.tbPlayerDef.TabIndex = 8;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 182);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(55, 15);
-            this.label9.TabIndex = 7;
-            this.label9.Text = "防禦力：";
-            // 
-            // tbPlayerLevel
-            // 
-            this.tbPlayerLevel.Location = new System.Drawing.Point(79, 208);
-            this.tbPlayerLevel.Name = "tbPlayerLevel";
-            this.tbPlayerLevel.ReadOnly = true;
-            this.tbPlayerLevel.Size = new System.Drawing.Size(100, 23);
-            this.tbPlayerLevel.TabIndex = 8;
+            this.tbPlayerExp.Location = new System.Drawing.Point(79, 237);
+            this.tbPlayerExp.Name = "tbPlayerExp";
+            this.tbPlayerExp.ReadOnly = true;
+            this.tbPlayerExp.Size = new System.Drawing.Size(100, 23);
+            this.tbPlayerExp.TabIndex = 8;
             // 
             // label10
             // 
@@ -261,22 +185,140 @@
             this.label10.TabIndex = 7;
             this.label10.Text = "等級：";
             // 
-            // tbPlayerExp
+            // tbPlayerLevel
             // 
-            this.tbPlayerExp.Location = new System.Drawing.Point(79, 237);
-            this.tbPlayerExp.Name = "tbPlayerExp";
-            this.tbPlayerExp.ReadOnly = true;
-            this.tbPlayerExp.Size = new System.Drawing.Size(100, 23);
-            this.tbPlayerExp.TabIndex = 8;
+            this.tbPlayerLevel.Location = new System.Drawing.Point(79, 208);
+            this.tbPlayerLevel.Name = "tbPlayerLevel";
+            this.tbPlayerLevel.ReadOnly = true;
+            this.tbPlayerLevel.Size = new System.Drawing.Size(100, 23);
+            this.tbPlayerLevel.TabIndex = 8;
             // 
-            // label11
+            // label9
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 240);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(55, 15);
-            this.label11.TabIndex = 7;
-            this.label11.Text = "經驗值：";
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 182);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(55, 15);
+            this.label9.TabIndex = 7;
+            this.label9.Text = "防禦力：";
+            // 
+            // tbPlayerDef
+            // 
+            this.tbPlayerDef.Location = new System.Drawing.Point(79, 179);
+            this.tbPlayerDef.Name = "tbPlayerDef";
+            this.tbPlayerDef.ReadOnly = true;
+            this.tbPlayerDef.Size = new System.Drawing.Size(100, 23);
+            this.tbPlayerDef.TabIndex = 8;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 153);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(55, 15);
+            this.label8.TabIndex = 7;
+            this.label8.Text = "攻擊力：";
+            // 
+            // tbPlayerAtk
+            // 
+            this.tbPlayerAtk.Location = new System.Drawing.Point(79, 150);
+            this.tbPlayerAtk.Name = "tbPlayerAtk";
+            this.tbPlayerAtk.ReadOnly = true;
+            this.tbPlayerAtk.Size = new System.Drawing.Size(100, 23);
+            this.tbPlayerAtk.TabIndex = 8;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 124);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(55, 15);
+            this.label7.TabIndex = 7;
+            this.label7.Text = "魔力值：";
+            // 
+            // tbPlayerMp
+            // 
+            this.tbPlayerMp.Location = new System.Drawing.Point(79, 121);
+            this.tbPlayerMp.Name = "tbPlayerMp";
+            this.tbPlayerMp.ReadOnly = true;
+            this.tbPlayerMp.Size = new System.Drawing.Size(100, 23);
+            this.tbPlayerMp.TabIndex = 8;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 95);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(55, 15);
+            this.label6.TabIndex = 7;
+            this.label6.Text = "生命值：";
+            // 
+            // tbPlayerHp
+            // 
+            this.tbPlayerHp.Location = new System.Drawing.Point(79, 92);
+            this.tbPlayerHp.Name = "tbPlayerHp";
+            this.tbPlayerHp.ReadOnly = true;
+            this.tbPlayerHp.Size = new System.Drawing.Size(100, 23);
+            this.tbPlayerHp.TabIndex = 8;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 66);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(67, 15);
+            this.label5.TabIndex = 7;
+            this.label5.Text = "玩家名稱：";
+            // 
+            // tbPlayerName
+            // 
+            this.tbPlayerName.Location = new System.Drawing.Point(79, 63);
+            this.tbPlayerName.Name = "tbPlayerName";
+            this.tbPlayerName.ReadOnly = true;
+            this.tbPlayerName.Size = new System.Drawing.Size(100, 23);
+            this.tbPlayerName.TabIndex = 8;
+            // 
+            // tbPlayerUid
+            // 
+            this.tbPlayerUid.Location = new System.Drawing.Point(79, 34);
+            this.tbPlayerUid.Name = "tbPlayerUid";
+            this.tbPlayerUid.ReadOnly = true;
+            this.tbPlayerUid.Size = new System.Drawing.Size(100, 23);
+            this.tbPlayerUid.TabIndex = 8;
+            // 
+            // tbMapName
+            // 
+            this.tbMapName.Location = new System.Drawing.Point(79, 266);
+            this.tbMapName.Name = "tbMapName";
+            this.tbMapName.ReadOnly = true;
+            this.tbMapName.Size = new System.Drawing.Size(100, 23);
+            this.tbMapName.TabIndex = 8;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 269);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(67, 15);
+            this.label12.TabIndex = 7;
+            this.label12.Text = "座標名稱：";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(79, 295);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.ReadOnly = true;
+            this.textBox2.Size = new System.Drawing.Size(100, 23);
+            this.textBox2.TabIndex = 8;
+            // 
+            // tbMapPos
+            // 
+            this.tbMapPos.AutoSize = true;
+            this.tbMapPos.Location = new System.Drawing.Point(6, 298);
+            this.tbMapPos.Name = "tbMapPos";
+            this.tbMapPos.Size = new System.Drawing.Size(43, 15);
+            this.tbMapPos.TabIndex = 7;
+            this.tbMapPos.Text = "座標：";
             // 
             // MainUI
             // 
@@ -326,6 +368,10 @@
         private System.Windows.Forms.TextBox tbPlayerMp;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox tbPlayerHp;
+        private System.Windows.Forms.Label tbMapPos;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox tbMapName;
     }
 }
 

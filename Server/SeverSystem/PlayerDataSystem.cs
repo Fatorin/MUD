@@ -27,6 +27,10 @@ namespace Server.ServerSystem
         public PlayerData GetOneInfoDataFromRedis(IDatabase redisDb, int playerUid)
         {
             var value = redisDb.HashGet(GetSystemRedisKey(), playerUid);
+            if(value.IsNullOrEmpty)
+            {
+                return new PlayerData(playerUid);
+            }
             return JsonConvert.DeserializeObject<PlayerData>(value);
         }
 

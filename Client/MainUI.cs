@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Model.Command;
+using Common.Model.PlayerData;
 using Common.Model.User;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace Client
     public partial class MainUI : Form
     {
         private delegate void UpdateShowLog(string text);
+        private delegate void UpdatePlayerData(PlayerData playerData);
         private BackgroundWorker bgWork;
 
         public MainUI()
@@ -95,9 +97,23 @@ namespace Client
             }
         }
 
-        public void UpdatePlayerInfo(Player player)
+        public void ShowPlayerInfo(PlayerData playerData)
         {
-
+            if (InvokeRequired)
+            {
+                BeginInvoke(new UpdatePlayerData(ShowPlayerInfo), new object[] { playerData });
+            }
+            else
+            {
+                tbPlayerUid.Text = $"{playerData.PlayerUid}";
+                tbPlayerName.Text = $"{playerData.Name}";
+                tbPlayerHp.Text = $"{playerData.HP}";
+                tbPlayerMp.Text = $"{playerData.MP}";
+                tbPlayerAtk.Text = $"{playerData.Atk}";
+                tbPlayerDef.Text = $"{playerData.Def}";
+                tbPlayerLevel.Text = $"{playerData.Level}";
+                tbPlayerExp.Text = $"{playerData.Exp}";
+            }
         }
     }
 

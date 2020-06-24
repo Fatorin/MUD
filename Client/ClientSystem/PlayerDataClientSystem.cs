@@ -18,8 +18,15 @@ namespace Client.ClientSystem
         public void OnPlayerDataResp(byte[] data)
         {
             PlayerDataRespPayload.ParsePayload(data, out PlayerDataAck ack, out var playerData);
+            if (ack != PlayerDataAck.Success)
+            {
+                Program.mainUI.ShowLogOnResult("接收角色資料失敗");
+                return;
+            }
+            
             Program.mainUI.ShowLogOnResult($"ack={ack}");
-            Program.mainUI.ShowLogOnResult($"playerData={playerData}");
+
+            Program.mainUI.ShowPlayerInfo(playerData);
         }
     }
 }
