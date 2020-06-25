@@ -37,8 +37,8 @@
             this.btnLogin = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.gbPlayerData = new System.Windows.Forms.GroupBox();
-            this.tbMapPos = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.tbMapPos = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.tbMapSeed = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
@@ -59,8 +59,8 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.gbContolPlayer = new System.Windows.Forms.GroupBox();
-            this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.gbPlayerData.SuspendLayout();
             this.gbContolPlayer.SuspendLayout();
             this.SuspendLayout();
@@ -138,8 +138,8 @@
             // 
             // gbPlayerData
             // 
+            this.gbPlayerData.Controls.Add(this.label13);
             this.gbPlayerData.Controls.Add(this.tbMapPos);
-            this.gbPlayerData.Controls.Add(this.textBox2);
             this.gbPlayerData.Controls.Add(this.label12);
             this.gbPlayerData.Controls.Add(this.tbMapSeed);
             this.gbPlayerData.Controls.Add(this.label11);
@@ -165,22 +165,22 @@
             this.gbPlayerData.TabStop = false;
             this.gbPlayerData.Text = "玩家資訊";
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 298);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(43, 15);
+            this.label13.TabIndex = 7;
+            this.label13.Text = "座標：";
+            // 
             // tbMapPos
             // 
-            this.tbMapPos.AutoSize = true;
-            this.tbMapPos.Location = new System.Drawing.Point(6, 298);
+            this.tbMapPos.Location = new System.Drawing.Point(79, 295);
             this.tbMapPos.Name = "tbMapPos";
-            this.tbMapPos.Size = new System.Drawing.Size(43, 15);
-            this.tbMapPos.TabIndex = 7;
-            this.tbMapPos.Text = "座標：";
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(79, 295);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(100, 23);
-            this.textBox2.TabIndex = 8;
+            this.tbMapPos.ReadOnly = true;
+            this.tbMapPos.Size = new System.Drawing.Size(100, 23);
+            this.tbMapPos.TabIndex = 8;
             // 
             // label12
             // 
@@ -357,15 +357,6 @@
             this.gbContolPlayer.TabStop = false;
             this.gbContolPlayer.Text = "人物行動控制";
             // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(90, 50);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 9;
-            this.button3.Text = "向後走";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
             // button4
             // 
             this.button4.Location = new System.Drawing.Point(170, 50);
@@ -374,6 +365,15 @@
             this.button4.TabIndex = 9;
             this.button4.Text = "向右走";
             this.button4.UseVisualStyleBackColor = true;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(90, 50);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 9;
+            this.button3.Text = "向後走";
+            this.button3.UseVisualStyleBackColor = true;
             // 
             // MainUI
             // 
@@ -425,8 +425,8 @@
         private System.Windows.Forms.TextBox tbPlayerMp;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox tbPlayerHp;
-        private System.Windows.Forms.Label tbMapPos;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox tbMapPos;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox tbMapSeed;
         private System.Windows.Forms.Button button1;

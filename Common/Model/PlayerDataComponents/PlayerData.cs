@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Text;
 
-namespace Common.Model.PlayerData
+namespace Common.Model.PlayerDataComponents
 {
     [Serializable]
     public class PlayerData
@@ -21,7 +21,7 @@ namespace Common.Model.PlayerData
             PosX = 0;
             PosY = 0;
             MapSeed = 0;
-            PlayeyFace = PlayerFaceEnum.Front;
+            PlayeyFace = PlayerFaceEnum.North;
             PlayerStatus = PlayerStatusEnum.Normal;
         }
         public int PlayerUid { get; set; }
@@ -38,7 +38,7 @@ namespace Common.Model.PlayerData
         public int PosY { get; set; }
         public PlayerFaceEnum PlayeyFace { get; set; }
         public PlayerStatusEnum PlayerStatus { get; set; }
-        public enum PlayerFaceEnum { Front, Left, Right, Back, Empty };
+        public enum PlayerFaceEnum { North, East, West, South };
 
         public enum PlayerStatusEnum { Normal, Dead, Stun, Scald, Frostbite };
 

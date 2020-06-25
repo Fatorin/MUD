@@ -1,18 +1,17 @@
-﻿using Common.Model.Message;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using static Common.Model.PlayerData.PlayerData;
 
-namespace Common.Model.GameMap
+namespace Common.Model.GameMapComponents
 {
-    public class GameMapMoveReqPayload
+    public class GameMapMoveRespPayload
     {
-        public static byte[] CreatePayload(int posX, int posY, PlayerFaceEnum playerFace)
+        public static byte[] CreatePayload(GameMapAck ackCode, int posX, int posY, PlayerDataComponents.PlayerData.PlayerFaceEnum playerFace)
         {
             byte[] byteArray;
             System.IO.MemoryStream memoryStream = new System.IO.MemoryStream();
             System.IO.BinaryWriter binaryWriter = new System.IO.BinaryWriter(memoryStream);
+            binaryWriter.Write(((int)(ackCode)));
             binaryWriter.Write(posX);
             binaryWriter.Write(posY);
             binaryWriter.Write((int)playerFace);
@@ -21,23 +20,14 @@ namespace Common.Model.GameMap
             memoryStream.Close();
             return byteArray;
         }
-
-        public static void ParsePayload(byte[] payload, out int posX, out int posY, out PlayerFaceEnum playerFace)
+        public static void ParsePayload(byte[] payload, out GameMapAck ackCode, out int posX, out int posY, out PlayerDataComponents.PlayerData.PlayerFaceEnum playerFace)
         {
             System.IO.MemoryStream memoryStream = new System.IO.MemoryStream(payload);
             System.IO.BinaryReader binaryReader = new System.IO.BinaryReader(memoryStream);
-            if ((binaryReader.ReadBoolean() == true))
-            {
-                posX = binaryReader.ReadInt32();
-                posY = binaryReader.ReadInt32();
-                playerFace = (PlayerFaceEnum)binaryReader.ReadInt32();
-            }
-            else
-            {
-                posX = -1;
-                posY = -1;
-                playerFace = PlayerFaceEnum.Empty;
-            }
+            ackCode = ((GameMapAck)(binaryReader.ReadInt32()));
+            posX = binaryReader.ReadInt32();
+            posY = binaryReader.ReadInt32();
+            playerFace = (PlayerDataComponents.PlayerData.PlayerFaceEnum)binaryReader.ReadInt32();
             binaryReader.Close();
             memoryStream.Close();
         }

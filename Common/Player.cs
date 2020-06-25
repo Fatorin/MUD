@@ -1,4 +1,4 @@
-﻿using Common.Model.PlayerData;
+﻿using Common.Model.PlayerDataComponents;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;

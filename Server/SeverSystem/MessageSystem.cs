@@ -1,6 +1,6 @@
 ﻿using Common;
 using Common.Model.Command;
-using Common.Model.Message;
+using Common.Model.MessageComponents;
 using Newtonsoft.Json;
 using Server.Base;
 using Server.Redis;

@@ -1,3 +1,4 @@
+using Common.Model.PlayerDataComponents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace Client
         /// </summary>
         /// 
         public static readonly MainUI mainUI = new MainUI();
+        public static PlayerData PlayerDataInfo;
 
         [STAThread]
         static void Main()

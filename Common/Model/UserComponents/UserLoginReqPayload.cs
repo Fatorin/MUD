@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Common.Model.User
+namespace Common.Model.UserComponents
 {
 	public static class UserLoginReqPayload
 	{

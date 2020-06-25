@@ -1,6 +1,6 @@
 ﻿using Client.Base;
 using Common;
-using Common.Model.Message;
+using Common.Model.MessageComponents;
 using System;
 using System.Collections.Generic;
 using System.Text;

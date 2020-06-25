@@ -1,7 +1,7 @@
 ﻿using Common;
 using Common.Model.Command;
-using Common.Model.Message;
-using Common.Model.User;
+using Common.Model.MessageComponents;
+using Common.Model.UserComponents;
 using Newtonsoft.Json;
 using Server.Base;
 using Server.PostgreSQL;

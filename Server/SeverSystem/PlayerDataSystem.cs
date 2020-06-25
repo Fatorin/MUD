@@ -1,6 +1,6 @@
 ﻿using Common;
-using Common.Model.PlayerData;
-using Common.Model.User;
+using Common.Model.PlayerDataComponents;
+using Common.Model.UserComponents;
 using Newtonsoft.Json;
 using Server.Base;
 using StackExchange.Redis;

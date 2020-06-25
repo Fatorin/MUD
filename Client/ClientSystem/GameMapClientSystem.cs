@@ -1,9 +1,5 @@
 ﻿using Client.Base;
-using Common.Model.GameMap;
-using Common.Model.PlayerData;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Common.Model.GameMapComponents;
 
 namespace Client.ClientSystem
 {
@@ -17,18 +13,24 @@ namespace Client.ClientSystem
             mappings.TryAdd((int)GameMapCommand.EventResp, OnEventResp);
         }
 
-        public void OnMoveReq(int posX, int posY, PlayerData.PlayerFaceEnum playerFace)
+        public void OnMoveReq(GameMapAction.MoveAction moveAction)
         {
-            var payload = GameMapMoveReqPayload.CreatePayload(posX, posY, playerFace);
+            //封包只傳往前後左右的動作
+            var payload = GameMapMoveReqPayload.CreatePayload(moveAction);
+
             SocketClientManager.Instance.Send(payload);
         }
 
         private void OnMoveResp(byte[] data)
         {
-            GameMapMoveRespPayload.ParsePayload(data, out var ackCode, out var posX, out var posY);
+            //封包接收移動的位置與面向的方向
+            GameMapMoveRespPayload.ParsePayload(data, out var ackCode, out var posX, out var posY, out var playerFace);
 
-
-
+            if (ackCode != GameMapAck.Success)
+            {
+                Program.mainUI.ShowLogOnResult($"移動錯誤，錯誤代碼：{ackCode}");
+                return;
+            }            
         }
 
         private void OnEventResp(byte[] data)

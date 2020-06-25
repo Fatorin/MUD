@@ -1,5 +1,5 @@
 ﻿using Common;
-using Common.Model.User;
+using Common.Model.UserComponents;
 using Server.Base;
 using StackExchange.Redis;
 using System;

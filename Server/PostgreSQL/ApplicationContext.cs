@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Common.Model.User;
+using Common.Model.UserComponents;
 using Microsoft.EntityFrameworkCore;
 
 namespace Server.PostgreSQL

@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
-namespace Common.Model.PlayerData
+namespace Common.Model.PlayerDataComponents
 {
     public class PlayerDataRespPayload
     {

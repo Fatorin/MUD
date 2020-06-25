@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Common.Model.PlayerData
+namespace Common.Model.PlayerDataComponents
 {
     public class PlayerDataReqPayload
     {

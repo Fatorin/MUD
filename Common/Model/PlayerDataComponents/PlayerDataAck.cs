@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Common.Model.GameMap
+namespace Common.Model.PlayerDataComponents
 {
-    public enum GameMapAck
+    public enum PlayerDataAck
     {
         Success,
+        Error,
         Unknown,
-        OverBorder,
     }
 }

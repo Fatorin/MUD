@@ -1,5 +1,5 @@
 ﻿using Common;
-using Common.Model.GameMap;
+using Common.Model.GameMapComponents;
 using Server.Base;
 using System;
 using System.Collections.Concurrent;

@@ -2,7 +2,7 @@
 using Client.ClientSystem;
 using Common;
 using Common.Model.Command;
-using Common.Model.User;
+using Common.Model.UserComponents;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

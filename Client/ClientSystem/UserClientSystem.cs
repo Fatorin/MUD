@@ -1,6 +1,6 @@
 ﻿using Client.Base;
 using Common;
-using Common.Model.User;
+using Common.Model.UserComponents;
 using System;
 using System.Collections.Generic;
 using System.Text;

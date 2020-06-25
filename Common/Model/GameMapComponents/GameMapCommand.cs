@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Common.Model.GameMap
+namespace Common.Model.GameMapComponents
 {
     public enum GameMapCommand
     {

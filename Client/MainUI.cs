@@ -1,7 +1,7 @@
 ﻿using Common;
 using Common.Model.Command;
-using Common.Model.PlayerData;
-using Common.Model.User;
+using Common.Model.PlayerDataComponents;
+using Common.Model.UserComponents;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,6 +23,7 @@ namespace Client
         private delegate void UpdatePlayerData(PlayerData playerData);
         private delegate void ControlPlayerDataAndControl(bool isVisible);
         private delegate void ControlPlayerLogin(bool isEnable);
+
 
         public MainUI()
         {
@@ -114,22 +115,6 @@ namespace Client
                 tbPlayerExp.Text = $"{playerData.Exp}";
                 tbMapSeed.Text = $"{playerData.Exp}";
                 tbMapPos.Text = $"[{playerData.PosX},{playerData.PosY}]";
-            }
-        }
-    }
-
-    public static class Extension
-    {
-        //非同步委派更新UI
-        public static void InvokeIfRequired(this Control control, MethodInvoker action)
-        {
-            if (control.InvokeRequired)//在非當前執行緒內 使用委派
-            {
-                control.Invoke(action);
-            }
-            else
-            {
-                action();
             }
         }
     }

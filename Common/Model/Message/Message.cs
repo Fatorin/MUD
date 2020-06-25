@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Common.Model.Message
+namespace Common.Model.MessageComponents
 {
     public class Message
     {
