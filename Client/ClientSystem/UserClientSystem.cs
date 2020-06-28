@@ -24,7 +24,7 @@ namespace Client.ClientSystem
         public void LoginResp(byte[] data)
         {
             UserLoginRespPayload.ParsePayload(data, out UserAck ack);
-            Program.mainUI.ShowLogOnResult($"ack={ack}");
+            Program.mainUI.OnShowSystemLog($"ack={ack}");
             if (ack != UserAck.Success)
             {
                 Program.mainUI.ControlLoginBtn(true);

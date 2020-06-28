@@ -20,14 +20,14 @@ namespace Client.ClientSystem
             PlayerDataRespPayload.ParsePayload(data, out PlayerDataAck ack, out var playerData);
             if (ack != PlayerDataAck.Success)
             {
-                Program.mainUI.ShowLogOnResult("接收角色資料失敗");
+                Program.mainUI.OnShowSystemLog("接收角色資料失敗");
                 return;
             }
             
-            Program.mainUI.ShowLogOnResult($"ack={ack}");
-            Program.mainUI.InitDisableInfoAndControl(true);
+            Program.mainUI.OnShowSystemLog($"ack={ack}");
+            Program.mainUI.OnControlPlayerPanel(true);
             Program.PlayerDataInfo = playerData;
-            Program.mainUI.ShowPlayerInfo(Program.PlayerDataInfo);
+            Program.mainUI.OnShowPlayerData(Program.PlayerDataInfo);
         }
     }
 }

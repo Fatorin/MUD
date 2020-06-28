@@ -28,9 +28,15 @@ namespace Client.ClientSystem
 
             if (ackCode != GameMapAck.Success)
             {
-                Program.mainUI.ShowLogOnResult($"移動錯誤，錯誤代碼：{ackCode}");
+                Program.mainUI.OnShowSystemLog($"移動錯誤，錯誤代碼：{ackCode}");
                 return;
-            }            
+            }
+
+            Program.PlayerDataInfo.PosX = posX;
+            Program.PlayerDataInfo.PosY = posY;
+            Program.PlayerDataInfo.PlayeyFace = playerFace;
+            Program.mainUI.OnShowPlayerData(Program.PlayerDataInfo);
+            Program.mainUI.OnControlPlayerAction(true);
         }
 
         private void OnEventResp(byte[] data)

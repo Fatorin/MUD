@@ -78,7 +78,7 @@ namespace Client
             }
             catch (Exception e)
             {
-                Program.mainUI.ShowLogOnResult(e.ToString());
+                Program.mainUI.OnShowSystemLog(e.ToString());
             }
         }
 
@@ -92,14 +92,14 @@ namespace Client
                 // Complete the connection.  
                 client.EndConnect(ar);
 
-                Program.mainUI.ShowLogOnResult($"Socket connected to {client.RemoteEndPoint.ToString()}");
+                Program.mainUI.OnShowSystemLog($"Socket connected to {client.RemoteEndPoint.ToString()}");
 
                 // Signal that the connection has been made.  
                 connectDone.Set();
             }
             catch (Exception e)
             {
-                Program.mainUI.ShowLogOnResult(e.ToString());
+                Program.mainUI.OnShowSystemLog(e.ToString());
                 //可重連
                 Program.mainUI.ControlLoginBtn(true);
             }
@@ -119,7 +119,7 @@ namespace Client
             }
             catch (Exception e)
             {
-                Program.mainUI.ShowLogOnResult(e.ToString());
+                Program.mainUI.OnShowSystemLog(e.ToString());
             }
         }
 
@@ -147,7 +147,7 @@ namespace Client
                         else
                         {
                             //如果CRC不對就不動作(先不關閉)
-                            Program.mainUI.ShowLogOnResult("CRC check fail");
+                            Program.mainUI.OnShowSystemLog("CRC check fail");
                             throw new Exception();
                         }
                     }
@@ -161,14 +161,14 @@ namespace Client
                     {
                         //傳送資料給對應的Command，扣掉前面的CRC,DataLen,Command
                         var pack = packetObj.infoBytes.Skip(PacketBuilder.VerificationLen).ToArray();
-                        Program.mainUI.ShowLogOnResult($"SystemCategory={packetObj.SystemCategory}, SystemCommand={packetObj.SystemCommand}");
+                        Program.mainUI.OnShowSystemLog($"SystemCategory={packetObj.SystemCategory}, SystemCommand={packetObj.SystemCommand}");
                         if (_SystemDict.TryGetValue(packetObj.SystemCategory, out var baseClientSystem))
                         {
                             baseClientSystem.PlayerEnter(packetObj.SystemCommand, pack);
                         }
                         else
                         {
-                            Program.mainUI.ShowLogOnResult("Not mapping function.");
+                            Program.mainUI.OnShowSystemLog("Not mapping function.");
                         }
 
                         //接收完成
@@ -186,7 +186,7 @@ namespace Client
             }
             catch (Exception e)
             {
-                Program.mainUI.ShowLogOnResult(e.ToString());
+                Program.mainUI.OnShowSystemLog(e.ToString());
             }
         }
 
@@ -212,8 +212,8 @@ namespace Client
             }
             catch (Exception e)
             {
-                Program.mainUI.ShowLogOnResult("發送失敗");
-                Program.mainUI.ShowLogOnResult(e.ToString());
+                Program.mainUI.OnShowSystemLog("發送失敗");
+                Program.mainUI.OnShowSystemLog(e.ToString());
             }
         }
 

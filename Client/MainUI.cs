@@ -1,5 +1,7 @@
-﻿using Common;
+﻿using Client.ClientSystem;
+using Common;
 using Common.Model.Command;
+using Common.Model.GameMapComponents;
 using Common.Model.PlayerDataComponents;
 using Common.Model.UserComponents;
 using System;
@@ -19,33 +21,22 @@ namespace Client
 {
     public partial class MainUI : Form
     {
-        private delegate void UpdateShowLog(string text);
-        private delegate void UpdatePlayerData(PlayerData playerData);
-        private delegate void ControlPlayerDataAndControl(bool isVisible);
+        private delegate void ShowSystemLog(string text);
+        private delegate void ShowPlayerData(PlayerData playerData);
+        private delegate void ControlPlayerPanel(bool isVisible);
+        private delegate void ControlPlayerAction(bool isVisible);
         private delegate void ControlPlayerLogin(bool isEnable);
 
 
         public MainUI()
         {
             InitializeComponent();
-            InitDisableInfoAndControl(false);
-        }
-
-        public void InitDisableInfoAndControl(bool isVisible)
-        {
-            if (InvokeRequired)
-            {
-                BeginInvoke(new ControlPlayerDataAndControl(InitDisableInfoAndControl), new object[] { isVisible }); ;
-            }
-            else
-            {
-                gbPlayerData.Visible = isVisible;
-                gbContolPlayer.Visible = isVisible;
-            }
-        }
+            OnControlPlayerPanel(false);
+        }        
 
         private void StartRequest(Action action)
         {
+            //非同步執行要求
             Task.Factory.StartNew(action);
         }
 
@@ -53,13 +44,37 @@ namespace Client
         {
             if (string.IsNullOrEmpty(tbId.Text) || string.IsNullOrEmpty(tbPW.Text))
             {
-                ShowLogOnResult($"Enter something, do not enter spaces or blanks.");
+                OnShowSystemLog($"Enter something, do not enter spaces or blanks.");
                 return;
             }
 
             btnLogin.Enabled = false;
 
             StartRequest(ConnectAndLogin);
+        }
+
+        private void btnGoStraight_Click(object sender, EventArgs e)
+        {
+            GameMapClientSystem.Instance.OnMoveReq(GameMapAction.MoveAction.GoStraight);
+            OnControlPlayerAction(false);
+        }
+
+        private void btnTurnLeft_Click(object sender, EventArgs e)
+        {
+            GameMapClientSystem.Instance.OnMoveReq(GameMapAction.MoveAction.TurnLeft);
+            OnControlPlayerAction(false);
+        }
+
+        private void btnGoBackward_Click(object sender, EventArgs e)
+        {
+            GameMapClientSystem.Instance.OnMoveReq(GameMapAction.MoveAction.GoBackward);
+            OnControlPlayerAction(false);
+        }
+
+        private void btnTurnRight_Click(object sender, EventArgs e)
+        {
+            GameMapClientSystem.Instance.OnMoveReq(GameMapAction.MoveAction.TurnRight);
+            OnControlPlayerAction(false);
         }
 
         private void ConnectAndLogin()
@@ -73,11 +88,36 @@ namespace Client
             SocketClientManager.Instance.StartClientAndLogin(userInfo);
         }
 
-        public void ShowLogOnResult(string str)
+        public void OnControlPlayerPanel(bool isVisible)
         {
             if (InvokeRequired)
             {
-                tbResult.BeginInvoke(new UpdateShowLog(ShowLogOnResult), new object[] { str });
+                BeginInvoke(new ControlPlayerPanel(OnControlPlayerPanel), new object[] { isVisible }); ;
+            }
+            else
+            {
+                gbPlayerData.Visible = isVisible;
+                gbContolPlayer.Visible = isVisible;
+            }
+        }
+
+        public void OnControlPlayerAction(bool isVisible)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new ControlPlayerAction(OnControlPlayerAction), new object[] { isVisible }); ;
+            }
+            else
+            {
+                gbContolPlayer.Visible = isVisible;
+            }
+        }
+
+        public void OnShowSystemLog(string str)
+        {
+            if (InvokeRequired)
+            {
+                tbResult.BeginInvoke(new ShowSystemLog(OnShowSystemLog), new object[] { str });
             }
             else
             {
@@ -97,11 +137,11 @@ namespace Client
             }
         }
 
-        public void ShowPlayerInfo(PlayerData playerData)
+        public void OnShowPlayerData(PlayerData playerData)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new UpdatePlayerData(ShowPlayerInfo), new object[] { playerData });
+                BeginInvoke(new ShowPlayerData(OnShowPlayerData), new object[] { playerData });
             }
             else
             {
@@ -115,6 +155,7 @@ namespace Client
                 tbPlayerExp.Text = $"{playerData.Exp}";
                 tbMapSeed.Text = $"{playerData.Exp}";
                 tbMapPos.Text = $"[{playerData.PosX},{playerData.PosY}]";
+                tbPlayerFace.Text = $"{Enum.GetName(typeof(PlayerData.PlayerFaceEnum), playerData.PlayeyFace)}";
             }
         }
     }

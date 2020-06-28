@@ -56,11 +56,13 @@
             this.label5 = new System.Windows.Forms.Label();
             this.tbPlayerName = new System.Windows.Forms.TextBox();
             this.tbPlayerUid = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnTurnLeft = new System.Windows.Forms.Button();
+            this.btnGoStraight = new System.Windows.Forms.Button();
             this.gbContolPlayer = new System.Windows.Forms.GroupBox();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.btnTurnRight = new System.Windows.Forms.Button();
+            this.btnGoBackward = new System.Windows.Forms.Button();
+            this.tbPlayerFace = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.gbPlayerData.SuspendLayout();
             this.gbContolPlayer.SuspendLayout();
             this.SuspendLayout();
@@ -138,6 +140,8 @@
             // 
             // gbPlayerData
             // 
+            this.gbPlayerData.Controls.Add(this.label14);
+            this.gbPlayerData.Controls.Add(this.tbPlayerFace);
             this.gbPlayerData.Controls.Add(this.label13);
             this.gbPlayerData.Controls.Add(this.tbMapPos);
             this.gbPlayerData.Controls.Add(this.label12);
@@ -326,30 +330,33 @@
             this.tbPlayerUid.Size = new System.Drawing.Size(100, 23);
             this.tbPlayerUid.TabIndex = 8;
             // 
-            // button1
+            // btnTurnLeft
             // 
-            this.button1.Location = new System.Drawing.Point(10, 50);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 9;
-            this.button1.Text = "向左走";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnTurnLeft.Location = new System.Drawing.Point(10, 50);
+            this.btnTurnLeft.Name = "btnTurnLeft";
+            this.btnTurnLeft.Size = new System.Drawing.Size(75, 23);
+            this.btnTurnLeft.TabIndex = 9;
+            this.btnTurnLeft.Text = "向左走";
+            this.btnTurnLeft.UseVisualStyleBackColor = true;
+            this.btnTurnLeft.Click += new System.EventHandler(this.btnTurnLeft_Click);
             // 
-            // button2
+            // btnGoStraight
             // 
-            this.button2.Location = new System.Drawing.Point(90, 20);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 9;
-            this.button2.Text = "向前走";
-            this.button2.UseVisualStyleBackColor = true;
+            this.btnGoStraight.Cursor = System.Windows.Forms.Cursors.Default;
+            this.btnGoStraight.Location = new System.Drawing.Point(90, 20);
+            this.btnGoStraight.Name = "btnGoStraight";
+            this.btnGoStraight.Size = new System.Drawing.Size(75, 23);
+            this.btnGoStraight.TabIndex = 9;
+            this.btnGoStraight.Text = "向前走";
+            this.btnGoStraight.UseVisualStyleBackColor = true;
+            this.btnGoStraight.Click += new System.EventHandler(this.btnGoStraight_Click);
             // 
             // gbContolPlayer
             // 
-            this.gbContolPlayer.Controls.Add(this.button4);
-            this.gbContolPlayer.Controls.Add(this.button3);
-            this.gbContolPlayer.Controls.Add(this.button1);
-            this.gbContolPlayer.Controls.Add(this.button2);
+            this.gbContolPlayer.Controls.Add(this.btnTurnRight);
+            this.gbContolPlayer.Controls.Add(this.btnGoBackward);
+            this.gbContolPlayer.Controls.Add(this.btnTurnLeft);
+            this.gbContolPlayer.Controls.Add(this.btnGoStraight);
             this.gbContolPlayer.Location = new System.Drawing.Point(533, 345);
             this.gbContolPlayer.Name = "gbContolPlayer";
             this.gbContolPlayer.Size = new System.Drawing.Size(255, 80);
@@ -357,23 +364,43 @@
             this.gbContolPlayer.TabStop = false;
             this.gbContolPlayer.Text = "人物行動控制";
             // 
-            // button4
+            // btnTurnRight
             // 
-            this.button4.Location = new System.Drawing.Point(170, 50);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(75, 23);
-            this.button4.TabIndex = 9;
-            this.button4.Text = "向右走";
-            this.button4.UseVisualStyleBackColor = true;
+            this.btnTurnRight.Location = new System.Drawing.Point(170, 50);
+            this.btnTurnRight.Name = "btnTurnRight";
+            this.btnTurnRight.Size = new System.Drawing.Size(75, 23);
+            this.btnTurnRight.TabIndex = 9;
+            this.btnTurnRight.Text = "向右走";
+            this.btnTurnRight.UseVisualStyleBackColor = true;
+            this.btnTurnRight.Click += new System.EventHandler(this.btnTurnRight_Click);
             // 
-            // button3
+            // btnGoBackward
             // 
-            this.button3.Location = new System.Drawing.Point(90, 50);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 9;
-            this.button3.Text = "向後走";
-            this.button3.UseVisualStyleBackColor = true;
+            this.btnGoBackward.Cursor = System.Windows.Forms.Cursors.Default;
+            this.btnGoBackward.Location = new System.Drawing.Point(90, 50);
+            this.btnGoBackward.Name = "btnGoBackward";
+            this.btnGoBackward.Size = new System.Drawing.Size(75, 23);
+            this.btnGoBackward.TabIndex = 9;
+            this.btnGoBackward.Text = "向後走";
+            this.btnGoBackward.UseVisualStyleBackColor = true;
+            this.btnGoBackward.Click += new System.EventHandler(this.btnGoBackward_Click);
+            // 
+            // tbPlayerFace
+            // 
+            this.tbPlayerFace.Location = new System.Drawing.Point(79, 322);
+            this.tbPlayerFace.Name = "tbPlayerFace";
+            this.tbPlayerFace.ReadOnly = true;
+            this.tbPlayerFace.Size = new System.Drawing.Size(100, 23);
+            this.tbPlayerFace.TabIndex = 8;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(6, 325);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(43, 15);
+            this.label14.TabIndex = 7;
+            this.label14.Text = "面向：";
             // 
             // MainUI
             // 
@@ -429,11 +456,13 @@
         private System.Windows.Forms.TextBox tbMapPos;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox tbMapSeed;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnTurnLeft;
+        private System.Windows.Forms.Button btnGoStraight;
         private System.Windows.Forms.GroupBox gbContolPlayer;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button btnGoBackward;
+        private System.Windows.Forms.Button btnTurnRight;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox tbPlayerFace;
     }
 }
 

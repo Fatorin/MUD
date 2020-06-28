@@ -9,5 +9,6 @@ namespace Common.Model.GameMapComponents
         Success,
         Unknown,
         OverBorder,
+        NoExistMapSeed,
     }
 }

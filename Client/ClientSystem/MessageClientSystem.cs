@@ -24,10 +24,10 @@ namespace Client.ClientSystem
         public void MessageResp(byte[] data)
         {
             MessageRespPayload.ParsePayload(data, out var ackCode, out var messageInfos);
-            Program.mainUI.ShowLogOnResult($"ackCode={ackCode}");
+            Program.mainUI.OnShowSystemLog($"ackCode={ackCode}");
             foreach(Message message in messageInfos)
             {
-                Program.mainUI.ShowLogOnResult($"message={message.MessageString}");
+                Program.mainUI.OnShowSystemLog($"message={message.MessageString}");
             }
         }
     }
