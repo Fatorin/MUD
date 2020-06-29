@@ -3,6 +3,7 @@ using Common.Model.PlayerDataComponents;
 using Common.Model.UserComponents;
 using Newtonsoft.Json;
 using Server.Base;
+using Server.SeverSystem;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -27,9 +28,11 @@ namespace Server.ServerSystem
         public PlayerData GetOneInfoDataFromRedis(IDatabase redisDb, int playerUid)
         {
             var value = redisDb.HashGet(GetSystemRedisKey(), playerUid);
-            if(value.IsNullOrEmpty)
+            if (value.IsNullOrEmpty)
             {
-                return new PlayerData(playerUid);
+                var playerData = new PlayerData(playerUid);
+                playerData.MapSeed = GameMapSystem.Instance.InitMapSeed;
+                return playerData;
             }
             return JsonConvert.DeserializeObject<PlayerData>(value);
         }

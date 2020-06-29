@@ -33,7 +33,7 @@ namespace Common.Model.PlayerDataComponents
         public int Level { get; set; }
         public int Exp { get; set; }
 
-        public int MapSeed { get; set; }
+        public long MapSeed { get; set; }
         public int PosX { get; set; }
         public int PosY { get; set; }
         public PlayerFaceEnum PlayeyFace { get; set; }

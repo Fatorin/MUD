@@ -7,6 +7,7 @@ using Server.Base;
 using Server.PostgreSQL;
 using Server.Redis;
 using Server.ServerSystem;
+using Server.SeverSystem;
 using StackExchange.Redis;
 using System;
 using System.Collections.Concurrent;
@@ -321,6 +322,8 @@ namespace Server
             //這邊綁定至對應的SYSTEM
             SystemDict.TryAdd((int)SystemCategory.UserSystem, UserSystem.Instance);
             SystemDict.TryAdd((int)SystemCategory.MessageSystem, MessageSystem.Instance);
+            SystemDict.TryAdd((int)SystemCategory.PlayerDataSystem, PlayerDataSystem.Instance);
+            SystemDict.TryAdd((int)SystemCategory.GameMapSystem, GameMapSystem.Instance);
         }
 
         private void InitFakeData()

@@ -1,4 +1,6 @@
 ﻿using Client.Base;
+using Common;
+using Common.Model.Command;
 using Common.Model.GameMapComponents;
 
 namespace Client.ClientSystem
@@ -16,8 +18,7 @@ namespace Client.ClientSystem
         public void OnMoveReq(GameMapAction.MoveAction moveAction)
         {
             //封包只傳往前後左右的動作
-            var payload = GameMapMoveReqPayload.CreatePayload(moveAction);
-
+            var payload = PacketBuilder.BuildPacket((int)SystemCategory.GameMapSystem, (int)GameMapCommand.MoveReq, GameMapMoveReqPayload.CreatePayload(moveAction));
             SocketClientManager.Instance.Send(payload);
         }
 
@@ -29,7 +30,7 @@ namespace Client.ClientSystem
             if (ackCode != GameMapAck.Success)
             {
                 Program.mainUI.OnShowSystemLog($"移動錯誤，錯誤代碼：{ackCode}");
-                return;
+                Program.mainUI.OnControlPlayerAction(true);
             }
 
             Program.PlayerDataInfo.PosX = posX;

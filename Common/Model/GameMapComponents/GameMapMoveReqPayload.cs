@@ -7,6 +7,7 @@
             byte[] byteArray;
             System.IO.MemoryStream memoryStream = new System.IO.MemoryStream();
             System.IO.BinaryWriter binaryWriter = new System.IO.BinaryWriter(memoryStream);
+            binaryWriter.Write(true);
             binaryWriter.Write((int)moveAction);
             byteArray = memoryStream.ToArray();
             binaryWriter.Close();

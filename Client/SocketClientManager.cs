@@ -37,6 +37,7 @@ namespace Client
             _SystemDict.TryAdd((int)SystemCategory.UserSystem, UserClientSystem.Instance);
             _SystemDict.TryAdd((int)SystemCategory.MessageSystem, MessageClientSystem.Instance);
             _SystemDict.TryAdd((int)SystemCategory.PlayerDataSystem, PlayerDataClientSystem.Instance);
+            _SystemDict.TryAdd((int)SystemCategory.GameMapSystem, GameMapClientSystem.Instance);
             /*if (rand == 1)
             {
                 serverPort = GlobalSetting.PortNum1;
